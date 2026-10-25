@@ -1,0 +1,20 @@
+SchemAxis Local Connector
+Copyright 2026 The SchemAxis Authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The product name and logo are trademarks of their owner. The Apache License
+covers the source code in this repository; it does not grant any right to use
+those trademarks, except as Section 6 of the License allows for describing the
+origin of the work.
+
+This product includes third-party software, each part under its own license:
+
+  - github.com/gorilla/websocket     BSD 2-Clause License
+  - github.com/sijms/go-ora/v2       MIT License
+  - Go runtime and standard library  BSD 3-Clause License
+  - Lucide icons                     ISC License (Feather-derived glyphs: MIT)
+  - Tailwind CSS (generated output)  MIT License
+
+Their full license texts are in THIRD_PARTY_LICENSES, which ships with the
+source and with every release archive.

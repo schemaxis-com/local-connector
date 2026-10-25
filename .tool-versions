@@ -1,0 +1,5 @@
+# The GoReleaser that builds the release archives. Every GoReleaser step of the
+# release workflow reads this line, so a release is built by the version named
+# in its own commit, not by whichever one is newest when the workflow runs. It
+# must stay an exact version: a range here would bring that back.
+goreleaser 2.18.2

@@ -1,0 +1,8 @@
+# Go source is LF on every platform, so gofmt (enforced by golangci-lint)
+# reports the same result on a Windows checkout as in CI.
+*.go text eol=lf
+# The go tool writes go.mod and go.sum with LF, so `go mod tidy -diff` gives the
+# same answer everywhere. Shell scripts need LF to run at all.
+go.mod text eol=lf
+go.sum text eol=lf
+*.sh text eol=lf

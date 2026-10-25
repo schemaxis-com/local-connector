@@ -1,0 +1,6 @@
+bin/
+*.exe
+.env
+.agent.key
+connections.json
+dist/

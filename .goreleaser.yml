@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+project_name: db-agent
+
+builds:
+  - id: agent
+    main: ./cmd/agent/
+    binary: db-agent
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    # -trimpath keeps the build machine's directory layout out of the binary:
+    # file paths in it are relative to the module, whoever built it.
+    flags:
+      - -trimpath
+    # The module path comes from go.mod, which is the one place it is written.
+    ldflags:
+      - -s -w -X {{ .ModulePath }}/internal/branding.Version={{ .Version }}
+
+archives:
+  - id: agent-archives
+    ids:
+      - agent
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    # EXPLICIT ALLOWLIST. Do not delete this key. GoReleaser's default file
+    # set is `LICENSE* README* CHANGELOG*`, so it would sweep the repository
+    # README (the landing page for someone reading the source) into every
+    # binary download. A binary download should carry the install guide, so the
+    # archive lists INSTALL.md. LICENSE and NOTICE ride along because an
+    # Apache-2.0 distribution of the binary must include them (see LICENSE §4),
+    # and THIRD_PARTY_LICENSES because the BSD and MIT code compiled into the
+    # binary requires its notices to travel with it.
+    #
+    # An allowlist, never a denylist: a denylist fails open the first time
+    # someone adds a file whose name nobody thought to exclude.
+    files:
+      - src: INSTALL.md
+      - src: LICENSE
+      - src: NOTICE
+      - src: THIRD_PARTY_LICENSES
+
+checksum:
+  name_template: "checksums.txt"
+
+# The release notes are the CHANGELOG.md section for the tag, which the release
+# workflow passes with --release-notes. Never set `changelog.disable: true`:
+# GoReleaser then ignores --release-notes as well and publishes empty notes.
+
+release:
+  # No owner: the release goes to the repository GoReleaser runs in,
+  # which is the public repository whose release workflow calls it. Created as
+  # a draft and made public by that workflow once every archive has its
+  # provenance attestation, so a visible release never lacks one.
+  draft: true
+  prerelease: auto

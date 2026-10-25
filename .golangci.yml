@@ -1,0 +1,36 @@
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosec
+    - unused
+    - ineffassign
+    - misspell
+    # A type assertion or == on an error that may arrive wrapped compiles,
+    # passes the happy-path test and silently disables the branch it guards.
+    - errorlint
+  exclusions:
+    rules:
+      # G304 and G703 flag every file path the connection manager opens. Those
+      # paths are the agent's own data directory, or the files the operator
+      # names with --config and --key, never input from the web UI or the
+      # tunnel.
+      - path: internal/manager/
+        linters:
+          - gosec
+        text: "G304|G703"
+      - path: internal/proxy/executor_test\.go
+        linters:
+          - gosec
+        text: "G101"
+
+formatters:
+  enable:
+    - gofmt
+
+run:
+  timeout: 5m
