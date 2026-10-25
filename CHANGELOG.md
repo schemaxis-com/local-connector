@@ -4,6 +4,15 @@ What changed in each release of the SchemAxis Local Connector, newest first.
 Every section below is published as the notes of the release with the same
 version.
 
+## [0.1.1] - 2026-10-25
+
+### Added
+
+- Builds for Windows, Linux and macOS, each with `checksums.txt` and a
+  signed build provenance attestation, so you can check that a download is
+  intact. INSTALL.md shows how.
+- The agent itself is unchanged since 0.1.0.
+
 ## [0.1.0] - 2026-10-25
 
 ### Added
