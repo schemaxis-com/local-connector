@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.AppName}} Agent Portal</title>
+    <!-- Tab icon: the product icon, inlined so the page fetches nothing. -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRpbGUiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjODE4Y2Y4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdjM2FlZCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0idXJsKCN0aWxlKSIvPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgPGVsbGlwc2UgY3g9IjE2IiBjeT0iMTAuNSIgcng9IjgiIHJ5PSIyLjciLz4KICAgIDxwYXRoIGQ9Ik04IDEwLjVWMjEuNUE4IDIuNyAwIDAgMCAyNCAyMS41VjEwLjUiLz4KICAgIDxwYXRoIGQ9Ik04IDE2QTggMi43IDAgMCAwIDI0IDE2Ii8+CiAgPC9nPgo8L3N2Zz4K">
     <!-- Fonts: a system stack, resolved locally. No external font fetch. -->
     <!-- Styles: Tailwind precompiled to a static stylesheet at build time, so the UI
          needs no network and pulls nothing from a third party. Regenerate it with the
          recipe in the repository README ("Changing the local web UI") when the
          markup's classes change. -->
     <style>
-*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Cascadia Code,Consolas,Liberation Mono,Menlo,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0}.bottom-0{bottom:0}.left-0{left:0}.right-0{right:0}.top-0{top:0}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.col-span-2{grid-column:span 2/span 2}.col-span-full{grid-column:1/-1}.mx-4{margin-left:1rem;margin-right:1rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-3{margin-bottom:.75rem}.mr-2{margin-right:.5rem}.mr-auto{margin-right:auto}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.line-clamp-1{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1{height:.25rem}.h-1\.5{height:.375rem}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:.5rem}.h-3\.5{height:.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-52{height:13rem}.h-6{height:1.5rem}.h-\[240px\]{height:240px}.h-full{height:100%}.max-h-16{max-height:4rem}.max-h-\[90vh\]{max-height:90vh}.min-h-screen{min-height:100vh}.w-1\.5{width:.375rem}.w-10{width:2.5rem}.w-12{width:3rem}.w-2{width:.5rem}.w-3\.5{width:.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-9{width:2.25rem}.w-full{width:100%}.max-w-7xl{max-width:80rem}.max-w-\[200px\]{max-width:200px}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.flex-grow{flex-grow:1}.rotate-180{--tw-rotate:180deg}.rotate-180,.scale-95{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-95{--tw-scale-x:.95;--tw-scale-y:.95}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}@keyframes spin{to{transform:rotate(1turn)}}.animate-spin{animation:spin 1s linear infinite}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.break-words{overflow-wrap:break-word}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-4{border-width:4px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-500\/15{border-color:rgba(245,158,11,.15)}.border-amber-500\/20{border-color:rgba(245,158,11,.2)}.border-emerald-500\/15{border-color:rgba(16,185,129,.15)}.border-emerald-500\/20{border-color:rgba(16,185,129,.2)}.border-indigo-500\/20{border-color:rgba(99,102,241,.2)}.border-indigo-500\/25{border-color:rgba(99,102,241,.25)}.border-indigo-500\/30{border-color:rgba(99,102,241,.3)}.border-rose-500\/15{border-color:rgba(244,63,94,.15)}.border-white\/10{border-color:hsla(0,0%,100%,.1)}.border-white\/5{border-color:hsla(0,0%,100%,.05)}.border-t-indigo-500{--tw-border-opacity:1;border-top-color:rgb(99 102 241/var(--tw-border-opacity,1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/10{background-color:rgba(245,158,11,.1)}.bg-amber-500\/5{background-color:rgba(245,158,11,.05)}.bg-black\/15{background-color:rgba(0,0,0,.15)}.bg-black\/60{background-color:rgba(0,0,0,.6)}.bg-darkBg\/80{background-color:rgba(9,13,22,.8)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-emerald-500\/10{background-color:rgba(16,185,129,.1)}.bg-emerald-500\/5{background-color:rgba(16,185,129,.05)}.bg-gray-500{--tw-bg-opacity:1;background-color:rgb(107 114 128/var(--tw-bg-opacity,1))}.bg-gray-500\/10{background-color:hsla(220,9%,46%,.1)}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39/var(--tw-bg-opacity,1))}.bg-gray-900\/10{background-color:rgba(17,24,39,.1)}.bg-gray-900\/40{background-color:rgba(17,24,39,.4)}.bg-gray-950\/50{background-color:rgba(3,7,18,.5)}.bg-gray-950\/90{background-color:rgba(3,7,18,.9)}.bg-indigo-500\/15{background-color:rgba(99,102,241,.15)}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.bg-rose-500{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.bg-rose-500\/10{background-color:rgba(244,63,94,.1)}.bg-rose-500\/5{background-color:rgba(244,63,94,.05)}.bg-white\/10{background-color:hsla(0,0%,100%,.1)}.bg-white\/5{background-color:hsla(0,0%,100%,.05)}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right,var(--tw-gradient-stops))}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgba(16,185,129,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-indigo-600{--tw-gradient-from:#4f46e5 var(--tw-gradient-from-position);--tw-gradient-to:rgba(79,70,229,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-indigo-400{--tw-gradient-to:#818cf8 var(--tw-gradient-to-position)}.to-indigo-500{--tw-gradient-to:#6366f1 var(--tw-gradient-to-position)}.p-1\.5{padding:.375rem}.p-2\.5{padding:.625rem}.p-6{padding:1.5rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-3\.5{padding-left:.875rem;padding-right:.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-4{padding-bottom:1rem}.pb-72{padding-bottom:18rem}.pr-4{padding-right:1rem}.pt-2{padding-top:.5rem}.pt-4{padding-top:1rem}.text-center{text-align:center}.font-mono{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Cascadia Code,Consolas,Liberation Mono,Menlo,monospace}.font-sans{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-normal{line-height:1.5}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-.025em}.tracking-wide{letter-spacing:.025em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-gray-100{--tw-text-opacity:1;color:rgb(243 244 246/var(--tw-text-opacity,1))}.text-gray-200{--tw-text-opacity:1;color:rgb(229 231 235/var(--tw-text-opacity,1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128/var(--tw-text-opacity,1))}.text-indigo-300{--tw-text-opacity:1;color:rgb(165 180 252/var(--tw-text-opacity,1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.text-indigo-500\/60{color:rgba(99,102,241,.6)}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229/var(--tw-text-opacity,1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.opacity-0{opacity:0}.opacity-75{opacity:.75}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-2xl,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-indigo-500\/20{--tw-shadow-color:rgba(99,102,241,.2);--tw-shadow:var(--tw-shadow-colored)}.shadow-indigo-600\/15{--tw-shadow-color:rgba(79,70,229,.15);--tw-shadow:var(--tw-shadow-colored)}.outline-none{outline:2px solid transparent;outline-offset:2px}.blur{--tw-blur:blur(8px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-lg{--tw-backdrop-blur:blur(16px)}.backdrop-blur-lg,.backdrop-blur-md{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px)}.backdrop-blur-sm,.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.after\:absolute:after{content:var(--tw-content);position:absolute}.after\:left-\[2px\]:after{content:var(--tw-content);left:2px}.after\:top-\[2px\]:after{content:var(--tw-content);top:2px}.after\:h-4:after{content:var(--tw-content);height:1rem}.after\:w-4:after{content:var(--tw-content);width:1rem}.after\:rounded-full:after{content:var(--tw-content);border-radius:9999px}.after\:border:after{content:var(--tw-content);border-width:1px}.after\:border-gray-300:after{content:var(--tw-content);--tw-border-opacity:1;border-color:rgb(209 213 219/var(--tw-border-opacity,1))}.after\:bg-gray-300:after{content:var(--tw-content);--tw-bg-opacity:1;background-color:rgb(209 213 219/var(--tw-bg-opacity,1))}.after\:transition-all:after{content:var(--tw-content);transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.after\:content-\[\'\'\]:after{--tw-content:"";content:var(--tw-content)}.hover\:translate-y-\[-2px\]:hover{--tw-translate-y:-2px;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-indigo-500\/50:hover{border-color:rgba(99,102,241,.5)}.hover\:bg-indigo-500:hover{--tw-bg-opacity:1;background-color:rgb(99 102 241/var(--tw-bg-opacity,1))}.hover\:bg-indigo-500\/\[0\.02\]:hover{background-color:rgba(99,102,241,.02)}.hover\:bg-rose-500\/10:hover{background-color:rgba(244,63,94,.1)}.hover\:bg-white\/10:hover{background-color:hsla(0,0%,100%,.1)}.hover\:bg-white\/5:hover{background-color:hsla(0,0%,100%,.05)}.hover\:text-gray-200:hover{--tw-text-opacity:1;color:rgb(229 231 235/var(--tw-text-opacity,1))}.hover\:text-indigo-400:hover{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.hover\:text-rose-400:hover{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.hover\:shadow-2xl:hover{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.focus\:border-indigo-500:focus{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.focus\:ring-1:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.focus\:ring-1:focus,.focus\:ring-2:focus{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.focus\:ring-indigo-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(99 102 241/var(--tw-ring-opacity,1))}.focus\:ring-offset-gray-900:focus{--tw-ring-offset-color:#111827}.active\:bg-indigo-700:active{--tw-bg-opacity:1;background-color:rgb(67 56 202/var(--tw-bg-opacity,1))}.active\:bg-white\/10:active{background-color:hsla(0,0%,100%,.1)}.active\:bg-white\/15:active{background-color:hsla(0,0%,100%,.15)}.peer:checked~.peer-checked\:bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.peer:checked~.peer-checked\:after\:translate-x-full:after{content:var(--tw-content);--tw-translate-x:100%;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked~.peer-checked\:after\:border-white:after{content:var(--tw-content);--tw-border-opacity:1;border-color:rgb(255 255 255/var(--tw-border-opacity,1))}.peer:focus~.peer-focus\:outline-none{outline:2px solid transparent;outline-offset:2px}@media (min-width:768px){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:1024px){.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Cascadia Code,Consolas,Liberation Mono,Menlo,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.pointer-events-none{pointer-events:none}.static{position:static}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0}.bottom-0{bottom:0}.left-0{left:0}.right-0{right:0}.top-0{top:0}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.col-span-2{grid-column:span 2/span 2}.col-span-full{grid-column:1/-1}.mx-4{margin-left:1rem;margin-right:1rem}.mx-6{margin-left:1.5rem;margin-right:1.5rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mr-2{margin-right:.5rem}.mr-auto{margin-right:auto}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-6{margin-top:1.5rem}.line-clamp-1{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-1{height:.25rem}.h-1\.5{height:.375rem}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:.5rem}.h-3{height:.75rem}.h-3\.5{height:.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-52{height:13rem}.h-6{height:1.5rem}.h-\[240px\]{height:240px}.h-full{height:100%}.max-h-16{max-height:4rem}.max-h-\[90vh\]{max-height:90vh}.min-h-screen{min-height:100vh}.w-1{width:.25rem}.w-1\.5{width:.375rem}.w-10{width:2.5rem}.w-12{width:3rem}.w-2{width:.5rem}.w-3{width:.75rem}.w-3\.5{width:.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-9{width:2.25rem}.w-full{width:100%}.min-w-0{min-width:0}.max-w-7xl{max-width:80rem}.max-w-\[200px\]{max-width:200px}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.rotate-180{--tw-rotate:180deg}.rotate-180,.scale-95{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.scale-95{--tw-scale-x:.95;--tw-scale-y:.95}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}@keyframes spin{to{transform:rotate(1turn)}}.animate-spin{animation:spin 1s linear infinite}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.break-words{overflow-wrap:break-word}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-4{border-width:4px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-500{--tw-border-opacity:1;border-color:rgb(245 158 11/var(--tw-border-opacity,1))}.border-amber-500\/15{border-color:rgba(245,158,11,.15)}.border-amber-500\/20{border-color:rgba(245,158,11,.2)}.border-emerald-500{--tw-border-opacity:1;border-color:rgb(16 185 129/var(--tw-border-opacity,1))}.border-emerald-500\/15{border-color:rgba(16,185,129,.15)}.border-emerald-500\/20{border-color:rgba(16,185,129,.2)}.border-indigo-500{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.border-indigo-500\/20{border-color:rgba(99,102,241,.2)}.border-indigo-500\/25{border-color:rgba(99,102,241,.25)}.border-indigo-500\/30{border-color:rgba(99,102,241,.3)}.border-rose-500{--tw-border-opacity:1;border-color:rgb(244 63 94/var(--tw-border-opacity,1))}.border-rose-500\/15{border-color:rgba(244,63,94,.15)}.border-white{--tw-border-opacity:1;border-color:rgb(255 255 255/var(--tw-border-opacity,1))}.border-white\/10{border-color:hsla(0,0%,100%,.1)}.border-white\/5{border-color:hsla(0,0%,100%,.05)}.border-t-indigo-500{--tw-border-opacity:1;border-top-color:rgb(99 102 241/var(--tw-border-opacity,1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/10{background-color:rgba(245,158,11,.1)}.bg-amber-500\/5{background-color:rgba(245,158,11,.05)}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0/var(--tw-bg-opacity,1))}.bg-black\/15{background-color:rgba(0,0,0,.15)}.bg-black\/60{background-color:rgba(0,0,0,.6)}.bg-darkBg{--tw-bg-opacity:1;background-color:rgb(9 13 22/var(--tw-bg-opacity,1))}.bg-darkBg\/80{background-color:rgba(9,13,22,.8)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153/var(--tw-bg-opacity,1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-emerald-500\/10{background-color:rgba(16,185,129,.1)}.bg-emerald-500\/5{background-color:rgba(16,185,129,.05)}.bg-gray-500{--tw-bg-opacity:1;background-color:rgb(107 114 128/var(--tw-bg-opacity,1))}.bg-gray-500\/10{background-color:hsla(220,9%,46%,.1)}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39/var(--tw-bg-opacity,1))}.bg-gray-900\/10{background-color:rgba(17,24,39,.1)}.bg-gray-900\/40{background-color:rgba(17,24,39,.4)}.bg-gray-950{--tw-bg-opacity:1;background-color:rgb(3 7 18/var(--tw-bg-opacity,1))}.bg-gray-950\/50{background-color:rgba(3,7,18,.5)}.bg-gray-950\/90{background-color:rgba(3,7,18,.9)}.bg-indigo-500{--tw-bg-opacity:1;background-color:rgb(99 102 241/var(--tw-bg-opacity,1))}.bg-indigo-500\/15{background-color:rgba(99,102,241,.15)}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.bg-rose-500{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.bg-rose-500\/10{background-color:rgba(244,63,94,.1)}.bg-rose-500\/5{background-color:rgba(244,63,94,.05)}.bg-rose-600{--tw-bg-opacity:1;background-color:rgb(225 29 72/var(--tw-bg-opacity,1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-white\/10{background-color:hsla(0,0%,100%,.1)}.bg-white\/5{background-color:hsla(0,0%,100%,.05)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right,var(--tw-gradient-stops))}.from-emerald-500{--tw-gradient-from:#10b981 var(--tw-gradient-from-position);--tw-gradient-to:rgba(16,185,129,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-indigo-400{--tw-gradient-from:#818cf8 var(--tw-gradient-from-position);--tw-gradient-to:rgba(129,140,248,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-indigo-600{--tw-gradient-from:#4f46e5 var(--tw-gradient-from-position);--tw-gradient-to:rgba(79,70,229,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-indigo-400{--tw-gradient-to:#818cf8 var(--tw-gradient-to-position)}.to-indigo-500{--tw-gradient-to:#6366f1 var(--tw-gradient-to-position)}.to-violet-600{--tw-gradient-to:#7c3aed var(--tw-gradient-to-position)}.p-1{padding:.25rem}.p-1\.5{padding:.375rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-6{padding:1.5rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-3\.5{padding-left:.875rem;padding-right:.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0{padding-top:0;padding-bottom:0}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-4{padding-bottom:1rem}.pb-72{padding-bottom:18rem}.pr-4{padding-right:1rem}.pt-2{padding-top:.5rem}.pt-4{padding-top:1rem}.text-center{text-align:center}.font-mono{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Cascadia Code,Consolas,Liberation Mono,Menlo,monospace}.font-sans{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-normal{line-height:1.5}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-.025em}.tracking-wide{letter-spacing:.025em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-gray-100{--tw-text-opacity:1;color:rgb(243 244 246/var(--tw-text-opacity,1))}.text-gray-200{--tw-text-opacity:1;color:rgb(229 231 235/var(--tw-text-opacity,1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128/var(--tw-text-opacity,1))}.text-indigo-300{--tw-text-opacity:1;color:rgb(165 180 252/var(--tw-text-opacity,1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.text-indigo-500{--tw-text-opacity:1;color:rgb(99 102 241/var(--tw-text-opacity,1))}.text-indigo-500\/60{color:rgba(99,102,241,.6)}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229/var(--tw-text-opacity,1))}.text-rose-300{--tw-text-opacity:1;color:rgb(253 164 175/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.opacity-0{opacity:0}.opacity-75{opacity:.75}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-2xl,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-indigo-500{--tw-shadow-color:#6366f1;--tw-shadow:var(--tw-shadow-colored)}.shadow-indigo-500\/20{--tw-shadow-color:rgba(99,102,241,.2);--tw-shadow:var(--tw-shadow-colored)}.shadow-indigo-600{--tw-shadow-color:#4f46e5;--tw-shadow:var(--tw-shadow-colored)}.shadow-indigo-600\/15{--tw-shadow-color:rgba(79,70,229,.15);--tw-shadow:var(--tw-shadow-colored)}.outline-none{outline:2px solid transparent;outline-offset:2px}.blur{--tw-blur:blur(8px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-lg{--tw-backdrop-blur:blur(16px)}.backdrop-blur-lg,.backdrop-blur-md{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px)}.backdrop-blur-sm,.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.after\:absolute:after{content:var(--tw-content);position:absolute}.after\:left-\[2px\]:after{content:var(--tw-content);left:2px}.after\:top-\[2px\]:after{content:var(--tw-content);top:2px}.after\:h-4:after{content:var(--tw-content);height:1rem}.after\:w-4:after{content:var(--tw-content);width:1rem}.after\:rounded-full:after{content:var(--tw-content);border-radius:9999px}.after\:border:after{content:var(--tw-content);border-width:1px}.after\:border-gray-300:after{content:var(--tw-content);--tw-border-opacity:1;border-color:rgb(209 213 219/var(--tw-border-opacity,1))}.after\:bg-gray-300:after{content:var(--tw-content);--tw-bg-opacity:1;background-color:rgb(209 213 219/var(--tw-bg-opacity,1))}.after\:transition-all:after{content:var(--tw-content);transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.after\:content-\[\'\'\]:after{--tw-content:"";content:var(--tw-content)}.hover\:translate-y-\[-2px\]:hover{--tw-translate-y:-2px;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-indigo-500\/50:hover{border-color:rgba(99,102,241,.5)}.hover\:bg-indigo-500:hover{--tw-bg-opacity:1;background-color:rgb(99 102 241/var(--tw-bg-opacity,1))}.hover\:bg-indigo-500\/\[0\.02\]:hover{background-color:rgba(99,102,241,.02)}.hover\:bg-rose-500:hover{--tw-bg-opacity:1;background-color:rgb(244 63 94/var(--tw-bg-opacity,1))}.hover\:bg-rose-500\/10:hover{background-color:rgba(244,63,94,.1)}.hover\:bg-white\/10:hover{background-color:hsla(0,0%,100%,.1)}.hover\:bg-white\/5:hover{background-color:hsla(0,0%,100%,.05)}.hover\:text-gray-200:hover{--tw-text-opacity:1;color:rgb(229 231 235/var(--tw-text-opacity,1))}.hover\:text-indigo-400:hover{--tw-text-opacity:1;color:rgb(129 140 248/var(--tw-text-opacity,1))}.hover\:text-rose-100:hover{--tw-text-opacity:1;color:rgb(255 228 230/var(--tw-text-opacity,1))}.hover\:text-rose-400:hover{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.hover\:shadow-2xl:hover{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.focus\:border-indigo-500:focus{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.focus\:ring-1:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.focus\:ring-1:focus,.focus\:ring-2:focus{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.focus\:ring-indigo-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(99 102 241/var(--tw-ring-opacity,1))}.focus\:ring-offset-gray-900:focus{--tw-ring-offset-color:#111827}.active\:bg-indigo-700:active{--tw-bg-opacity:1;background-color:rgb(67 56 202/var(--tw-bg-opacity,1))}.active\:bg-rose-700:active{--tw-bg-opacity:1;background-color:rgb(190 18 60/var(--tw-bg-opacity,1))}.active\:bg-white\/10:active{background-color:hsla(0,0%,100%,.1)}.active\:bg-white\/15:active{background-color:hsla(0,0%,100%,.15)}.peer:checked~.peer-checked\:bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.peer:checked~.peer-checked\:after\:translate-x-full:after{content:var(--tw-content);--tw-translate-x:100%;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.peer:checked~.peer-checked\:after\:border-white:after{content:var(--tw-content);--tw-border-opacity:1;border-color:rgb(255 255 255/var(--tw-border-opacity,1))}.peer:focus~.peer-focus\:outline-none{outline:2px solid transparent;outline-offset:2px}@media (min-width:768px){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:1024px){.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
     </style>
     <!-- Icons: Lucide SVGs inlined, so the UI loads no external script. Exposes
          window.lucide.createIcons(), which the page calls after each render.
@@ -29,6 +31,7 @@
             "activity": "<path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\" />",
             "plug-2": "<path d=\"M9 2v6\" /> <path d=\"M15 2v6\" /> <path d=\"M12 17v5\" /> <path d=\"M5 8h14\" /> <path d=\"M6 11V8h12v3a6 6 0 1 1-12 0Z\" />",
             "trash-2": "<path d=\"M10 11v6\" /> <path d=\"M14 11v6\" /> <path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\" /> <path d=\"M3 6h18\" /> <path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\" />",
+            "copy": "<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />",
             "pencil": "<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" /> <path d=\"m15 5 4 4\" />"
             };
             function createIcons() {
@@ -81,6 +84,11 @@
         .glow-red {
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
         }
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col font-sans">
@@ -89,7 +97,7 @@
     <header class="border-b border-white/5 bg-darkBg/80 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
                     <i data-lucide="database" class="w-5 h-5 text-white"></i>
                 </div>
                 <div>
@@ -125,6 +133,15 @@
             <button onclick="openModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/15 transition-all duration-200">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 Add Connection
+            </button>
+        </div>
+
+        <!-- A failed toggle or delete, until dismissed: shown here because the
+             grid below is redrawn on every poll. -->
+        <div id="page-notice" role="alert" class="hidden">
+            <span id="page-notice-text" class="flex-1"></span>
+            <button type="button" onclick="hidePageNotice()" aria-label="Dismiss" class="text-rose-300 hover:text-rose-100 p-1 rounded-lg hover:bg-white/5 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
 
@@ -180,10 +197,11 @@
             <div class="p-6 overflow-y-auto flex-1 custom-scroll space-y-5">
                 <form id="connection-form" class="space-y-4" onsubmit="event.preventDefault();">
                     <input type="hidden" id="form-id">
+                    <input type="hidden" id="form-copy-of">
                     
                     <!-- Basic Info -->
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Profile Name</label>
+                        <label for="form-label" class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5">Profile Name</label>
                         <input type="text" id="form-label" placeholder="e.g. Oracle TEST HR Schema" required
                             class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                     </div>
@@ -193,19 +211,19 @@
                         <span class="block text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Database Credentials (Oracle)</span>
                         <div class="grid grid-cols-3 gap-4">
                             <div class="col-span-2">
-                                <label class="block text-xs text-gray-400 mb-1">Hostname</label>
+                                <label for="form-host" class="block text-xs text-gray-400 mb-1">Hostname</label>
                                 <input type="text" id="form-host" placeholder="e.g. db.test.internal or 192.168.1.50" required
                                     class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">Port</label>
+                                <label for="form-port" class="block text-xs text-gray-400 mb-1">Port</label>
                                 <input type="text" id="form-port" placeholder="1521" required
                                     class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                             </div>
                         </div>
                         <div class="grid grid-cols-3 gap-4 mt-3">
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">Connect By</label>
+                                <label for="form-conn-type" class="block text-xs text-gray-400 mb-1">Connect By</label>
                                 <select id="form-conn-type" onchange="updateConnTypeUI()"
                                     class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-100 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="service" class="bg-gray-900">Service Name</option>
@@ -213,21 +231,22 @@
                                 </select>
                             </div>
                             <div class="col-span-2">
-                                <label id="form-identifier-label" class="block text-xs text-gray-400 mb-1">Service Name</label>
+                                <label for="form-identifier" id="form-identifier-label" class="block text-xs text-gray-400 mb-1">Service Name</label>
                                 <input type="text" id="form-identifier" placeholder="e.g. ORCLPDB1" required
                                     class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4 mt-3">
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">Username</label>
+                                <label for="form-user" class="block text-xs text-gray-400 mb-1">Username</label>
                                 <input type="text" id="form-user" placeholder="e.g. app_readonly" required
                                     class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs text-gray-400 mb-1">Password</label>
+                                <label for="form-password" class="block text-xs text-gray-400 mb-1">Password</label>
                                 <input type="password" id="form-password" placeholder="••••••••" required
                                     class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+                                <p id="form-password-hint" class="hidden mt-1 text-[11px] text-gray-500">Kept from the original unless you type a new one.</p>
                             </div>
                         </div>
                     </div>
@@ -237,14 +256,15 @@
                     <div class="border-t border-white/5 pt-4">
                         <span class="block text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Cloud Tunnel Credentials</span>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">Tunnel URL</label>
+                            <label for="form-tunnel" class="block text-xs text-gray-400 mb-1">Tunnel URL</label>
                             <input type="text" id="form-tunnel" placeholder="e.g. wss://your-tunnel-host/api/v1/tunnel/connect" required
                                 class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div class="mt-3">
-                            <label class="block text-xs text-gray-400 mb-1">Agent Token</label>
+                            <label for="form-token" class="block text-xs text-gray-400 mb-1">Agent Token</label>
                             <input type="password" id="form-token" placeholder="••••••••" required
                                 class="w-full bg-gray-950/50 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+                            <p id="form-token-hint" class="hidden mt-1 text-[11px] text-gray-500">Each connection has its own agent token. Paste the one {{.AppName}} issued for this connection.</p>
                         </div>
                     </div>
 
@@ -255,6 +275,9 @@
                     </div>
                 </form>
             </div>
+
+            <!-- The outcome of a test or a save, next to the buttons that ran it -->
+            <div id="form-result" role="status" aria-live="polite" class="hidden"></div>
 
             <!-- Modal Footer -->
             <div class="p-6 border-t border-white/5 flex gap-3 justify-end bg-gray-900/40">
@@ -271,6 +294,22 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete confirmation -->
+    <dialog id="delete-dialog" aria-labelledby="delete-dialog-title" class="glass-panel w-full max-w-sm rounded-2xl p-6 text-gray-100 shadow-2xl">
+        <form method="dialog">
+            <h3 id="delete-dialog-title" class="font-bold text-base break-words"></h3>
+            <p class="text-sm text-gray-400 mt-2">Its tunnel stops at once, and its saved password and token are removed from this agent.</p>
+            <div class="flex gap-3 justify-end mt-6">
+                <button value="cancel" class="border border-white/10 hover:bg-white/5 active:bg-white/10 text-gray-300 font-semibold text-xs px-4 py-2.5 rounded-xl transition-all">
+                    Cancel
+                </button>
+                <button value="delete" class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all">
+                    Delete
+                </button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- Script Operations -->
     <script>
@@ -424,7 +463,7 @@
                         </div>
                         <div>
                             <h3 class="text-base font-semibold">No Database Connections</h3>
-                            <p class="text-sm text-gray-400 mt-1 max-w-sm">Add the Oracle database you want to analyze.</p>
+                            <p class="text-sm text-gray-400 mt-1 max-w-sm">Add the Oracle schema you want to analyze. Each connection reads one schema.</p>
                         </div>
                         <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2.5 rounded-xl transition-all mt-2">
                             Add First Connection
@@ -505,18 +544,20 @@
 
                             <!-- Details -->
                             <div class="px-6 py-3 border-t border-b border-white/5 bg-black/15 text-xs text-gray-400 flex flex-col gap-2 flex-grow">
-                                <div class="flex justify-between font-mono">
-                                    <span>Target Database:</span>
-                                    <span class="text-gray-300 line-clamp-1 max-w-[200px]">${target}</span>
+                                <!-- Long values end in an ellipsis on one line; the
+                                     full value is in the tooltip. -->
+                                <div class="flex justify-between gap-4 font-mono">
+                                    <span class="shrink-0">Target Database:</span>
+                                    <span class="text-gray-300 truncate min-w-0 max-w-[200px]" title="${target}">${target}</span>
                                 </div>
-                                <div class="flex justify-between font-mono">
-                                    <span>Oracle User:</span>
-                                    <span class="text-gray-300">${escapeHtml(prof.oracle_user)}</span>
+                                <div class="flex justify-between gap-4 font-mono">
+                                    <span class="shrink-0">Oracle User:</span>
+                                    <span class="text-gray-300 truncate min-w-0 max-w-[200px]" title="${escapeHtml(prof.oracle_user)}">${escapeHtml(prof.oracle_user)}</span>
                                 </div>
 
-                                <div class="flex justify-between font-mono">
-                                    <span>Tunnel Target:</span>
-                                    <span class="text-gray-300 line-clamp-1 max-w-[200px]">${escapeHtml(prof.tunnel_url)}</span>
+                                <div class="flex justify-between gap-4 font-mono">
+                                    <span class="shrink-0">Tunnel Target:</span>
+                                    <span class="text-gray-300 truncate min-w-0 max-w-[200px]" title="${escapeHtml(prof.tunnel_url)}">${escapeHtml(prof.tunnel_url)}</span>
                                 </div>
                                 ${(status === 'error' || status === 'reconnecting') && conn.last_error ? `
                                     <div class="mt-2 p-2.5 rounded ${status === 'reconnecting' ? 'bg-amber-500/10 border border-amber-500/20 text-amber-300' : 'bg-rose-500/10 border border-rose-500/15 text-rose-300'} text-[11px] font-mono break-words leading-normal max-h-16 overflow-y-auto custom-scroll">
@@ -527,6 +568,10 @@
 
                             <!-- Actions -->
                             <div class="px-6 py-4 flex gap-3 justify-end bg-gray-900/10">
+                                <button onclick="duplicateConnection('${conn.id}')" class="mr-auto text-gray-400 hover:text-indigo-400 font-medium text-xs py-1.5 px-3 rounded hover:bg-white/5 transition-colors flex items-center gap-1.5">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    Duplicate
+                                </button>
                                 <button onclick="deleteConnection('${conn.id}')" class="text-gray-400 hover:text-rose-400 font-medium text-xs py-1.5 px-3 rounded hover:bg-rose-500/10 transition-colors flex items-center gap-1.5">
                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                     Delete
@@ -554,19 +599,59 @@
             lucide.createIcons();
         }
 
+        // The reason the agent gave for refusing a request, if it gave one.
+        async function errorFrom(res) {
+            try {
+                const data = await res.json();
+                return data.error || '';
+            } catch {
+                return '';
+            }
+        }
+
+        // Text the agent sent, written as a sentence.
+        function sentence(text) {
+            if (!text) return '';
+            const s = text[0].toUpperCase() + text.slice(1);
+            return /[.!?]$/.test(s) ? s : s + '.';
+        }
+
+        // The reason a request failed. A fetch that throws means the agent did
+        // not answer at all.
+        function reasonOf(err) {
+            if (err instanceof TypeError) {
+                return 'The agent did not answer. Check that it is still running.';
+            }
+            return sentence(err.message);
+        }
+
+        function showPageNotice(text) {
+            const notice = document.getElementById('page-notice');
+            notice.className = 'flex items-start gap-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/15 text-rose-300 text-sm';
+            document.getElementById('page-notice-text').textContent = text;
+        }
+
+        function hidePageNotice() {
+            document.getElementById('page-notice').className = 'hidden';
+        }
+
         async function toggleConnection(id, checked) {
+            const p = profiles.find(pr => pr.id === id);
+            const name = p ? `"${p.label}"` : 'the connection';
             try {
                 const res = await fetch(`/api/connections/${id}/toggle`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ enabled: checked })
                 });
-                if (!res.ok) throw new Error();
-                fetchConnections();
+                if (!res.ok) throw new Error(await errorFrom(res));
+                hidePageNotice();
             } catch (err) {
-                alert("Failed to toggle connection");
-                console.error(err);
+                const reason = reasonOf(err);
+                showPageNotice(`Could not turn ${name} ${checked ? 'on' : 'off'}.${reason ? ' ' + reason : ''}`);
             }
+            // Either way the switch goes back to showing what the agent holds.
+            fetchConnections();
         }
 
         // Sync the identifier field's label/placeholder with the Connect By selector
@@ -584,52 +669,90 @@
             }
         }
 
-        function openModal(id = null) {
+        function showFormResult(ok, text) {
+            const box = document.getElementById('form-result');
+            box.className = ok
+                ? 'mx-6 mb-4 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 text-xs leading-normal break-words'
+                : 'mx-6 mb-4 p-3 rounded-xl border border-rose-500/15 bg-rose-500/10 text-rose-300 text-xs leading-normal break-words';
+            box.textContent = text;
+        }
+
+        function clearFormResult() {
+            const box = document.getElementById('form-result');
+            box.className = 'hidden';
+            box.textContent = '';
+        }
+
+        // Shows a password or token field as holding the saved value. The API
+        // sends this mask, never the stored password or token, and the mask
+        // sent back unchanged keeps the stored value.
+        function showSaved(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.value = '••••••••';
+            field.placeholder = '••••••••';
+            field.required = false;
+        }
+
+        // Fills the form with a saved profile.
+        function fillForm(p) {
+            document.getElementById('form-label').value = p.label;
+            document.getElementById('form-host').value = p.oracle_host;
+            document.getElementById('form-port').value = p.oracle_port;
+            // This form saves one of the two. A profile holding both
+            // connects by the SID, so the form shows the SID.
+            if (p.oracle_sid) {
+                document.getElementById('form-conn-type').value = 'sid';
+                document.getElementById('form-identifier').value = p.oracle_sid;
+            } else {
+                document.getElementById('form-conn-type').value = 'service';
+                document.getElementById('form-identifier').value = p.oracle_service;
+            }
+            updateConnTypeUI();
+            document.getElementById('form-user').value = p.oracle_user;
+            showSaved('form-password');
+            document.getElementById('form-tunnel').value = p.tunnel_url;
+            showSaved('form-token');
+            document.getElementById('form-enabled').checked = p.enabled;
+        }
+
+        // Opens the form empty, on the saved profile id, or on a copy of it.
+        function openModal(id = null, duplicate = false) {
             const modal = document.getElementById('connection-modal');
             const title = document.getElementById('modal-title');
 
             document.getElementById('connection-form').reset();
             document.getElementById('form-id').value = '';
+            document.getElementById('form-copy-of').value = '';
             document.getElementById('form-conn-type').value = 'service';
             updateConnTypeUI();
             document.getElementById('form-password').required = true;
             document.getElementById('form-password').placeholder = 'Enter user password';
             document.getElementById('form-token').required = true;
             document.getElementById('form-token').placeholder = 'Enter JWT Agent Token';
+            document.getElementById('form-password-hint').classList.add('hidden');
+            document.getElementById('form-token-hint').classList.add('hidden');
+            clearFormResult();
 
-            if (id) {
+            const p = id ? profiles.find(pr => pr.id === id) : null;
+            if (p && duplicate) {
+                title.innerText = 'Duplicate Connection Profile';
+                fillForm(p);
+                document.getElementById('form-copy-of').value = p.id;
+                document.getElementById('form-label').value = `${p.label} (copy)`;
+                // The agent copies the password itself. The token is never
+                // copied: each one belongs to a single connection.
+                const token = document.getElementById('form-token');
+                token.value = '';
+                token.placeholder = 'Paste the agent token for this connection';
+                token.required = true;
+                document.getElementById('form-password-hint').classList.remove('hidden');
+                document.getElementById('form-token-hint').classList.remove('hidden');
+                document.getElementById('form-enabled').checked = true;
+            } else if (id) {
                 title.innerText = 'Edit Connection Profile';
-                const p = profiles.find(pr => pr.id === id);
                 if (p) {
                     document.getElementById('form-id').value = p.id;
-                    document.getElementById('form-label').value = p.label;
-                    document.getElementById('form-host').value = p.oracle_host;
-                    document.getElementById('form-port').value = p.oracle_port;
-                    // This form saves one of the two. A profile holding both
-                    // connects by the SID, so the form shows the SID.
-                    if (p.oracle_sid) {
-                        document.getElementById('form-conn-type').value = 'sid';
-                        document.getElementById('form-identifier').value = p.oracle_sid;
-                    } else {
-                        document.getElementById('form-conn-type').value = 'service';
-                        document.getElementById('form-identifier').value = p.oracle_service;
-                    }
-                    updateConnTypeUI();
-                    document.getElementById('form-user').value = p.oracle_user;
-                    
-                    // The API sends this mask, never the stored password or token.
-                    // Sent back unchanged, the mask keeps the stored values.
-                    document.getElementById('form-password').value = '••••••••';
-                    document.getElementById('form-password').placeholder = '••••••••';
-                    document.getElementById('form-password').required = false;
-
-                    document.getElementById('form-tunnel').value = p.tunnel_url;
-                    
-                    document.getElementById('form-token').value = '••••••••';
-                    document.getElementById('form-token').placeholder = '••••••••';
-                    document.getElementById('form-token').required = false;
-
-                    document.getElementById('form-enabled').checked = p.enabled;
+                    fillForm(p);
                 }
             } else {
                 title.innerText = 'New Connection Profile';
@@ -652,11 +775,12 @@
         async function testConnection() {
             const btn = document.getElementById('btn-test');
             const originalHtml = btn.innerHTML;
-            
+
             const connType = document.getElementById('form-conn-type').value;
             const identifier = document.getElementById('form-identifier').value;
             const profile = {
                 id: document.getElementById('form-id').value,
+                copy_of: document.getElementById('form-copy-of').value,
                 label: document.getElementById('form-label').value || 'Test Connection',
                 oracle_host: document.getElementById('form-host').value,
                 oracle_port: document.getElementById('form-port').value,
@@ -667,10 +791,11 @@
             };
 
             if (!profile.oracle_host || !identifier || !profile.oracle_user || !profile.oracle_password) {
-                alert("Fill in the hostname, the service name or SID, the username and the password to run a test.");
+                showFormResult(false, 'Fill in the hostname, the service name or SID, the username and the password to run a test.');
                 return;
             }
 
+            clearFormResult();
             btn.disabled = true;
             btn.innerHTML = `<div class="w-3.5 h-3.5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div> Testing...`;
 
@@ -680,15 +805,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(profile)
                 });
-                
+
                 const result = await res.json();
                 if (res.ok && result.success) {
-                    alert("Connection test succeeded: the database accepted the login.");
+                    showFormResult(true, 'Test passed: the database accepted the login.');
                 } else {
-                    alert("Connection test failed: " + (result.error || "the agent gave no reason."));
+                    showFormResult(false, 'Test failed. ' + (sentence(result.error) || 'The agent gave no reason.'));
                 }
             } catch (err) {
-                alert("Connection test failed: the agent did not answer. Check that it is still running.");
+                showFormResult(false, 'Test not run. ' + reasonOf(err));
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
@@ -701,6 +826,7 @@
             const identifier = document.getElementById('form-identifier').value;
             const profile = {
                 id: idInput || 'conn_' + Date.now(),
+                copy_of: document.getElementById('form-copy-of').value,
                 label: document.getElementById('form-label').value,
                 oracle_host: document.getElementById('form-host').value,
                 oracle_port: document.getElementById('form-port').value,
@@ -714,10 +840,11 @@
             };
 
             if (!profile.label || !profile.oracle_host || !identifier || !profile.oracle_user || !profile.oracle_password || !profile.tunnel_url || !profile.agent_token) {
-                alert("Fill in every field.");
+                showFormResult(false, 'Fill in every field to save the connection.');
                 return;
             }
 
+            clearFormResult();
             const btn = document.getElementById('btn-save');
             btn.disabled = true;
             btn.innerText = 'Saving...';
@@ -728,25 +855,36 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(profile)
                 });
-                
+
                 if (!res.ok) {
-                    const data = await res.json();
-                    throw new Error(data.error || "Could not save");
+                    throw new Error(await errorFrom(res) || 'The agent did not save the connection and gave no reason.');
                 }
-                
+
                 closeModal();
                 fetchConnections();
             } catch (err) {
-                alert("Failed to save connection: " + err.message);
+                showFormResult(false, reasonOf(err));
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Save Connection';
             }
         }
 
+        // Asks in the page's own dialog, and resolves to true on Delete.
+        function confirmDelete(label) {
+            const dialog = document.getElementById('delete-dialog');
+            document.getElementById('delete-dialog-title').textContent = `Delete "${label}"?`;
+            dialog.returnValue = '';
+            return new Promise(resolve => {
+                dialog.addEventListener('close', () => resolve(dialog.returnValue === 'delete'), { once: true });
+                dialog.showModal();
+            });
+        }
+
         async function deleteConnection(id) {
             const p = profiles.find(pr => pr.id === id);
-            if (!confirm(`Are you sure you want to delete "${p ? p.label : 'this connection'}"?\nThis will stop its running tunnel immediately.`)) {
+            const label = p ? p.label : 'this connection';
+            if (!await confirmDelete(label)) {
                 return;
             }
 
@@ -754,16 +892,21 @@
                 const res = await fetch(`/api/connections/${id}`, {
                     method: 'DELETE'
                 });
-                if (!res.ok) throw new Error();
+                if (!res.ok) throw new Error(await errorFrom(res));
+                hidePageNotice();
                 fetchConnections();
             } catch (err) {
-                alert("Failed to delete connection profile");
-                console.error(err);
+                const reason = reasonOf(err);
+                showPageNotice(`Could not delete "${label}".${reason ? ' ' + reason : ''}`);
             }
         }
 
         function editConnection(id) {
             openModal(id);
+        }
+
+        function duplicateConnection(id) {
+            openModal(id, true);
         }
     </script>
 </body>

@@ -7,6 +7,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"regexp"
 	"strconv"
@@ -19,12 +20,28 @@ import (
 	"github.com/sijms/go-ora/v2/network"
 )
 
-// QueryTimeout bounds one query, from taking a session to reading its last
-// row. A hung database would otherwise hold the query's goroutine forever. It
-// stays below the 30 seconds the platform waits for an answer, so a query that
-// runs out of time comes back as an error the platform can report, rather than
-// as no answer at all.
+// QueryTimeout bounds a query that arrives without a time limit of its own,
+// from taking a session to reading its last row. A hung database would
+// otherwise hold the query's goroutine forever. The platform sends each query
+// with the time it allows, a little less than it waits, so that a query that
+// runs out of time comes back as an error rather than as no answer at all.
 const QueryTimeout = 25 * time.Second
+
+// MaxQueryTimeout is the longest a query may run, whatever limit it arrives
+// with.
+const MaxQueryTimeout = 5 * time.Minute
+
+// queryLimit is how long a query may run: the limit it arrived with, or
+// QueryTimeout without one, and never more than MaxQueryTimeout.
+func queryLimit(limit time.Duration) time.Duration {
+	switch {
+	case limit <= 0:
+		return QueryTimeout
+	case limit > MaxQueryTimeout:
+		return MaxQueryTimeout
+	}
+	return limit
+}
 
 // The session pool. maxIdleConns also bounds how many dead sessions Ping can
 // meet before it reaches a new one.
@@ -108,6 +125,8 @@ type Executor struct {
 	// lastAnswer is when the database last completed a statement or a ping
 	// for this executor. Nil until it has.
 	lastAnswer atomic.Pointer[time.Time]
+	// lastLimit is the time limit of the latest query, 0 before the first.
+	lastLimit atomic.Int64
 	// refused holds the first login or network encryption the database
 	// refused. From then on the executor opens no session: each attempt would
 	// meet the same refusal, and a refused login also counts against the
@@ -155,10 +174,58 @@ func NewExecutor(ctx context.Context, cfg *config.Config) (*Executor, error) {
 // with it, so an agent serving databases in different character sets would
 // garble the text of all but the first.
 func newExecutor(cfg *config.Config) *Executor {
-	db := sql.OpenDB(go_ora.NewConnector(buildConnStr(cfg)))
+	db := sql.OpenDB(newConnector(buildConnStr(cfg)))
 	db.SetMaxOpenConns(maxOpenConns)
 	db.SetMaxIdleConns(maxIdleConns)
 	return &Executor{db: db}
+}
+
+// connectTimeout bounds the TCP connect to the database. It is the default
+// go-ora applies when it dials by itself.
+const connectTimeout = 60 * time.Second
+
+// connector opens sessions through go-ora and closes the socket of an attempt
+// that fails. Once the TCP connect has succeeded, go-ora returns a failure (a
+// refused login, a database still starting, too many sessions) without
+// closing the socket, which then stays open on both ends until the garbage
+// collector finds it. An agent retrying every few seconds would keep a socket,
+// and on the database a server process, for each attempt meanwhile.
+type connector struct {
+	*go_ora.OracleConnector
+}
+
+func newConnector(connStr string) connector {
+	c := go_ora.NewConnector(connStr).(*go_ora.OracleConnector)
+	c.Dialer(&dialer{net.Dialer{Timeout: connectTimeout}})
+	return connector{c}
+}
+
+func (c connector) Connect(ctx context.Context) (driver.Conn, error) {
+	var opened []net.Conn
+	conn, err := c.OracleConnector.Connect(context.WithValue(ctx, dialedKey{}, &opened))
+	if err != nil {
+		for _, s := range opened {
+			_ = s.Close()
+		}
+	}
+	return conn, err
+}
+
+// dialedKey carries the list of sockets dialled for one connection attempt.
+type dialedKey struct{}
+
+// dialer dials the database for go-ora and adds each socket to the attempt's
+// list.
+type dialer struct {
+	net.Dialer
+}
+
+func (d *dialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	conn, err := d.Dialer.DialContext(ctx, network, address)
+	if opened, ok := ctx.Value(dialedKey{}).(*[]net.Conn); ok && err == nil {
+		*opened = append(*opened, conn)
+	}
+	return conn, err
 }
 
 // Ping checks that the database answers, on a pooled session or a new one.
@@ -226,6 +293,15 @@ func (e *Executor) answered() {
 	e.lastAnswer.Store(&now)
 }
 
+// QueryLimit returns how long the latest query was allowed to run, or
+// QueryTimeout before the first.
+func (e *Executor) QueryLimit() time.Duration {
+	if limit := e.lastLimit.Load(); limit > 0 {
+		return time.Duration(limit)
+	}
+	return QueryTimeout
+}
+
 // getConn acquires a connection from the pool and, if PL/SQL session parameters
 // (module, action, client info) are configured, initializes the session. After
 // a refused login or network encryption it returns that refusal without trying.
@@ -269,10 +345,11 @@ func (e *Executor) Close() error {
 	return nil
 }
 
-// Execute runs a SELECT query and returns all rows as [][]any.
-func (e *Executor) Execute(sqlText string, params map[string]any) ([][]any, error) {
+// Execute runs a SELECT query and returns all rows as [][]any. limit is how
+// long it may run (see queryLimit).
+func (e *Executor) Execute(sqlText string, params map[string]any, limit time.Duration) ([][]any, error) {
 	result := make([][]any, 0)
-	err := e.query(sqlText, params, func(rows *sql.Rows, width int) error {
+	err := e.query(sqlText, params, limit, func(rows *sql.Rows, width int) error {
 		for rows.Next() {
 			row, err := scanRow(rows, width)
 			if err != nil {
@@ -290,9 +367,9 @@ func (e *Executor) Execute(sqlText string, params map[string]any) ([][]any, erro
 
 // ExecuteOne runs a SELECT query and returns its first row, or nil when it
 // has none.
-func (e *Executor) ExecuteOne(sqlText string, params map[string]any) ([]any, error) {
+func (e *Executor) ExecuteOne(sqlText string, params map[string]any, limit time.Duration) ([]any, error) {
 	var row []any
-	err := e.query(sqlText, params, func(rows *sql.Rows, width int) error {
+	err := e.query(sqlText, params, limit, func(rows *sql.Rows, width int) error {
 		if !rows.Next() {
 			// Next also returns false when the fetch fails, and that is not
 			// an empty result.
@@ -309,15 +386,17 @@ func (e *Executor) ExecuteOne(sqlText string, params map[string]any) ([]any, err
 }
 
 // query checks sqlText, runs it on a pooled session and hands its rows to
-// read, which is given the number of columns. QueryTimeout bounds the whole
-// call, the reading included. The query counts as an answer from the database
-// only when read succeeds.
-func (e *Executor) query(sqlText string, params map[string]any, read func(rows *sql.Rows, width int) error) error {
+// read, which is given the number of columns. The query's limit bounds the
+// whole call, the reading included. The query counts as an answer from the
+// database only when read succeeds.
+func (e *Executor) query(sqlText string, params map[string]any, limit time.Duration, read func(rows *sql.Rows, width int) error) error {
 	if err := validateReadOnly(sqlText); err != nil {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), QueryTimeout)
+	limit = queryLimit(limit)
+	e.lastLimit.Store(int64(limit))
+	ctx, cancel := context.WithTimeout(context.Background(), limit)
 	defer cancel()
 
 	conn, err := e.getConn(ctx)
@@ -364,9 +443,9 @@ func scanRow(rows *sql.Rows, width int) ([]any, error) {
 
 // ExecuteClob runs a query expected to return a single CLOB value. It returns
 // an empty string when the query has no row or the value is NULL.
-func (e *Executor) ExecuteClob(sqlText string, params map[string]any) (string, error) {
+func (e *Executor) ExecuteClob(sqlText string, params map[string]any, limit time.Duration) (string, error) {
 	var val sql.NullString
-	err := e.query(sqlText, params, func(rows *sql.Rows, _ int) error {
+	err := e.query(sqlText, params, limit, func(rows *sql.Rows, _ int) error {
 		if !rows.Next() {
 			return rows.Err()
 		}

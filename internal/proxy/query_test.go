@@ -8,6 +8,7 @@ import (
 	"io"
 	"reflect"
 	"testing"
+	"time"
 )
 
 // answeringDB answers every query with the same rows. With fetchErr set, the
@@ -18,10 +19,18 @@ type answeringDB struct {
 	rows     [][]driver.Value
 	fetchErr error
 	queries  int
+	// timeLeft is how long the latest query had left when it took a session.
+	timeLeft time.Duration
 }
 
-func (d *answeringDB) Connect(context.Context) (driver.Conn, error) { return answeringSession{d}, nil }
-func (d *answeringDB) Driver() driver.Driver                        { return nil }
+func (d *answeringDB) Connect(ctx context.Context) (driver.Conn, error) {
+	if deadline, ok := ctx.Deadline(); ok {
+		d.timeLeft = time.Until(deadline)
+	}
+	return answeringSession{d}, nil
+}
+
+func (d *answeringDB) Driver() driver.Driver { return nil }
 
 type answeringSession struct{ db *answeringDB }
 
@@ -84,7 +93,7 @@ func TestExecuteReturnsEveryRowWithTextAsStrings(t *testing.T) {
 	}
 	e := executorOn(t, d)
 
-	got, err := e.Execute("SELECT owner, object_name, line FROM all_objects", nil)
+	got, err := e.Execute("SELECT owner, object_name, line FROM all_objects", nil, 0)
 	if err != nil {
 		t.Fatalf("Execute = %v", err)
 	}
@@ -100,7 +109,7 @@ func TestExecuteReturnsEveryRowWithTextAsStrings(t *testing.T) {
 func TestExecuteWithNoRowsReturnsAnEmptyList(t *testing.T) {
 	e := executorOn(t, &answeringDB{columns: []string{"X"}})
 
-	got, err := e.Execute("SELECT x FROM t", nil)
+	got, err := e.Execute("SELECT x FROM t", nil, 0)
 	if err != nil || got == nil || len(got) != 0 {
 		t.Fatalf("Execute = %#v, %v, want an empty list, which serializes as [] rather than null", got, err)
 	}
@@ -112,7 +121,7 @@ func TestExecuteOneReturnsTheFirstRow(t *testing.T) {
 		rows:    [][]driver.Value{{[]byte("first")}, {[]byte("second")}},
 	})
 
-	got, err := e.ExecuteOne("SELECT text FROM all_source", nil)
+	got, err := e.ExecuteOne("SELECT text FROM all_source", nil, 0)
 	if err != nil || !reflect.DeepEqual(got, []any{"first"}) {
 		t.Fatalf("ExecuteOne = %#v, %v, want [first]", got, err)
 	}
@@ -122,7 +131,7 @@ func TestExecuteOneReturnsTheFirstRow(t *testing.T) {
 func TestExecuteOneWithNoRowIsAnAnswer(t *testing.T) {
 	e := executorOn(t, &answeringDB{columns: []string{"X"}})
 
-	got, err := e.ExecuteOne("SELECT x FROM t", nil)
+	got, err := e.ExecuteOne("SELECT x FROM t", nil, 0)
 	if err != nil || got != nil {
 		t.Fatalf("ExecuteOne = %#v, %v, want no row and no error", got, err)
 	}
@@ -137,7 +146,7 @@ func TestExecuteOneWithNoRowIsAnAnswer(t *testing.T) {
 func TestExecuteOneReportsAFetchThatFails(t *testing.T) {
 	e := executorOn(t, &answeringDB{columns: []string{"X"}, fetchErr: errFetch})
 
-	got, err := e.ExecuteOne("SELECT x FROM t", nil)
+	got, err := e.ExecuteOne("SELECT x FROM t", nil, 0)
 	if !errors.Is(err, errFetch) || got != nil {
 		t.Fatalf("ExecuteOne = %#v, %v, want the fetch error", got, err)
 	}
@@ -153,7 +162,7 @@ func TestExecuteReportsAFetchThatFailsHalfway(t *testing.T) {
 		fetchErr: errFetch,
 	})
 
-	if _, err := e.Execute("SELECT x FROM t", nil); !errors.Is(err, errFetch) {
+	if _, err := e.Execute("SELECT x FROM t", nil, 0); !errors.Is(err, errFetch) {
 		t.Fatalf("Execute = %v, want the fetch error", err)
 	}
 	if !e.LastAnswer().IsZero() {
@@ -167,13 +176,13 @@ func TestEveryModeRefusesAWriteBeforeReachingTheDatabase(t *testing.T) {
 	e := executorOn(t, d)
 	const write = "DELETE FROM t"
 
-	if _, err := e.Execute(write, nil); !errors.Is(err, errNotAQuery) {
+	if _, err := e.Execute(write, nil, 0); !errors.Is(err, errNotAQuery) {
 		t.Errorf("Execute(%q) = %v, want it refused", write, err)
 	}
-	if _, err := e.ExecuteOne(write, nil); !errors.Is(err, errNotAQuery) {
+	if _, err := e.ExecuteOne(write, nil, 0); !errors.Is(err, errNotAQuery) {
 		t.Errorf("ExecuteOne(%q) = %v, want it refused", write, err)
 	}
-	if _, err := e.ExecuteClob(write, nil); !errors.Is(err, errNotAQuery) {
+	if _, err := e.ExecuteClob(write, nil, 0); !errors.Is(err, errNotAQuery) {
 		t.Errorf("ExecuteClob(%q) = %v, want it refused", write, err)
 	}
 	if d.queries != 0 {
@@ -183,17 +192,17 @@ func TestEveryModeRefusesAWriteBeforeReachingTheDatabase(t *testing.T) {
 
 func TestExecuteClobReturnsTheValueOrNothing(t *testing.T) {
 	e := executorOn(t, &answeringDB{columns: []string{"DDL"}, rows: [][]driver.Value{{[]byte("CREATE TABLE t (x NUMBER)")}}})
-	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil); err != nil || got != "CREATE TABLE t (x NUMBER)" {
+	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil, 0); err != nil || got != "CREATE TABLE t (x NUMBER)" {
 		t.Fatalf("ExecuteClob = %q, %v", got, err)
 	}
 
 	e = executorOn(t, &answeringDB{columns: []string{"DDL"}})
-	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil); err != nil || got != "" {
+	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil, 0); err != nil || got != "" {
 		t.Fatalf("ExecuteClob with no row = %q, %v, want an empty value", got, err)
 	}
 
 	e = executorOn(t, &answeringDB{columns: []string{"DDL"}, rows: [][]driver.Value{{nil}}})
-	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil); err != nil || got != "" {
+	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil, 0); err != nil || got != "" {
 		t.Fatalf("ExecuteClob of a NULL = %q, %v, want an empty value", got, err)
 	}
 }
@@ -203,10 +212,42 @@ func TestExecuteClobReturnsTheValueOrNothing(t *testing.T) {
 func TestExecuteClobReportsAFetchThatFails(t *testing.T) {
 	e := executorOn(t, &answeringDB{columns: []string{"DDL"}, fetchErr: errFetch})
 
-	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil); !errors.Is(err, errFetch) || got != "" {
+	if got, err := e.ExecuteClob("SELECT ddl FROM t", nil, 0); !errors.Is(err, errFetch) || got != "" {
 		t.Fatalf("ExecuteClob = %q, %v, want the fetch error", got, err)
 	}
 	if !e.LastAnswer().IsZero() {
 		t.Error("a query that failed is recorded as an answer")
+	}
+}
+
+// A query runs for as long as it arrived with, QueryTimeout without a limit
+// and never past MaxQueryTimeout, and the executor remembers the limit for
+// the database check.
+func TestAQueryRunsForTheLimitItArrivedWith(t *testing.T) {
+	cases := []struct {
+		name        string
+		limit, want time.Duration
+	}{
+		{"no limit", 0, QueryTimeout},
+		{"a longer one", 90 * time.Second, 90 * time.Second},
+		{"past the maximum", time.Hour, MaxQueryTimeout},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			d := &answeringDB{columns: []string{"X"}}
+			e := executorOn(t, d)
+			if e.QueryLimit() != QueryTimeout {
+				t.Fatalf("QueryLimit before any query = %s, want %s", e.QueryLimit(), QueryTimeout)
+			}
+			if _, err := e.Execute("SELECT x FROM t", nil, tc.limit); err != nil {
+				t.Fatalf("Execute = %v", err)
+			}
+			if d.timeLeft > tc.want || d.timeLeft < tc.want-time.Second {
+				t.Errorf("the query had %s, want %s", d.timeLeft, tc.want)
+			}
+			if got := e.QueryLimit(); got != tc.want {
+				t.Errorf("QueryLimit = %s, want %s", got, tc.want)
+			}
+		})
 	}
 }

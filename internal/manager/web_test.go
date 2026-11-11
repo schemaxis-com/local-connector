@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -229,6 +230,45 @@ func TestSaveTrimsTheTunnelURL(t *testing.T) {
 	}
 	if got, want := profiles[0].TunnelURL, "wss://platform.example.com/api/v1/tunnel/connect"; got != want {
 		t.Errorf("stored tunnel URL = %q, want %q", got, want)
+	}
+}
+
+// The page duplicates a profile by sending the masked password and the ID it
+// copied, never the password itself. The copy keeps the original's password,
+// and copy_of is not stored.
+func TestSaveADuplicate(t *testing.T) {
+	mgr := newTestManager(t)
+	port := startTestServerWith(t, LoopbackHost, mgr)
+	save := func(body string) {
+		t.Helper()
+		resp, err := http.Post(fmt.Sprintf("http://127.0.0.1:%d/api/connections", port), "application/json", strings.NewReader(body)) //nolint:noctx // short-lived test request
+		if err != nil {
+			t.Fatalf("save request failed: %v", err)
+		}
+		_ = resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("save = %d, want 200", resp.StatusCode)
+		}
+	}
+
+	save(`{"id":"conn_1","label":"hr","oracle_host":"db.internal","oracle_port":"1521",` +
+		`"oracle_service":"ORCL","oracle_user":"hr","oracle_password":"pw",` +
+		`"tunnel_url":"wss://platform.example.com/api/v1/tunnel/connect","agent_token":"tok-1","enabled":false}`)
+	save(`{"id":"conn_2","label":"hr test","oracle_host":"db.internal","oracle_port":"1521",` +
+		`"oracle_service":"ORCL","oracle_user":"hr_test","oracle_password":"` + maskedSecret + `",` +
+		`"tunnel_url":"wss://platform.example.com/api/v1/tunnel/connect","agent_token":"tok-2","enabled":false,` +
+		`"copy_of":"conn_1"}`)
+
+	password, err := mgr.crypto.Decrypt(mgr.profiles["conn_2"].OraclePassword)
+	if err != nil || password != "pw" {
+		t.Errorf("duplicate's password = %q, %v, want the original's", password, err)
+	}
+	stored, err := os.ReadFile(mgr.profilesPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(stored), "copy_of") {
+		t.Error("copy_of was written to connections.json")
 	}
 }
 

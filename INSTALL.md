@@ -170,6 +170,12 @@ Connection** stores the profile, with the password and the token encrypted, and
 starts the tunnel when "Enable and connect tunnel immediately" is ticked. Each
 connection's card then shows its status.
 
+**Duplicate**, on a connection's card, opens the same form filled in from that
+connection: the quick way to add a second schema of the same database. The
+password is kept unless you type a new one. The agent token is left empty,
+because each connection on the platform has its own: paste the token of the
+connection you are adding. A token another connection already uses is refused.
+
 ```
 db-agent.exe
         ↓
@@ -179,9 +185,9 @@ Tunnel connects over WSS to the platform
 ```
 
 **Closed the browser tab by mistake?** Run the agent again. Only one agent
-runs at a time, so a second launch finds the one already running, reopens its
-web UI in your browser and exits. You do not need the port number, and the
-agent keeps running. Started with `--no-browser`, the second launch prints the
+runs from a data directory at a time, so a second launch finds the one already
+running, reopens its web UI in your browser and exits. You do not need the
+port number, and the agent keeps running. Started with `--no-browser`, the second launch prints the
 address instead of opening it. If the agent was stopped by force or the
 machine lost power, the next launch starts normally.
 
@@ -350,6 +356,9 @@ worth as little as possible if it is ever exposed.
   agent. Paste the new token into the connection's Agent Token field in this
   agent's web UI and save it. Until then the card shows the token as rejected
   ("AGENT_TOKEN is invalid or expired").
+- The token alone decides which connection on the platform a profile serves.
+  The platform's **Test** button names the schema a connection
+  reads, and its card shows it once known.
 
 ---
 
@@ -373,10 +382,13 @@ GRANT SELECT_CATALOG_ROLE TO agent_ro;
   with their columns, constraints and dependencies, and read them without the
   right to lock their rows. Oracle 11.2 does not have it: grant
   `SELECT ANY TABLE` there, which also allows `SELECT ... FOR UPDATE`.
-- `SELECT_CATALOG_ROLE` lets the platform read the definition of a view or a
-  materialized view through `DBMS_METADATA`, which column lineage needs.
-  Without it, an analysis shows the view but not the columns it draws from.
-  The role reads the data dictionary, not the rows of your tables.
+- `SELECT_CATALOG_ROLE` lets the platform read the exact DDL of another
+  schema's objects through `DBMS_METADATA`, as the source views and the AI
+  assistant show it. Without it, the definition of a view or a materialized
+  view is read from `ALL_VIEWS` and `ALL_MVIEWS` instead, so impact analysis
+  and column lineage still follow it, but it is shown without its storage and
+  refresh clauses, and a table of another schema has no DDL to show. The role
+  reads the data dictionary, not the rows of your tables.
 
 To include the procedures, functions and packages of other schemas, with their
 source, also grant `EXECUTE ANY PROCEDURE`. It lets the account run that code
@@ -405,7 +417,9 @@ Files:
 - `.agent.key`: the AES-256 encryption key (generated automatically; **never
   share this file**)
 - `connections.json`: the connection profiles, with their credentials encrypted
-- `agent.lock`: held while the agent runs, so that only one runs at a time
+- `agent.lock`: held while the agent runs, so that only one agent at a time
+  uses the directory. An agent started with `--config` keeps it beside that
+  `connections.json` instead
 
 ---
 

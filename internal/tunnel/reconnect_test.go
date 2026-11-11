@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -21,17 +22,17 @@ import (
 // countingExecutor records how many queries reached it.
 type countingExecutor struct{ calls atomic.Int32 }
 
-func (e *countingExecutor) Execute(string, map[string]any) ([][]any, error) {
+func (e *countingExecutor) Execute(string, map[string]any, time.Duration) ([][]any, error) {
 	e.calls.Add(1)
 	return [][]any{}, nil
 }
 
-func (e *countingExecutor) ExecuteOne(string, map[string]any) ([]any, error) {
+func (e *countingExecutor) ExecuteOne(string, map[string]any, time.Duration) ([]any, error) {
 	e.calls.Add(1)
 	return nil, nil
 }
 
-func (e *countingExecutor) ExecuteClob(string, map[string]any) (string, error) {
+func (e *countingExecutor) ExecuteClob(string, map[string]any, time.Duration) (string, error) {
 	e.calls.Add(1)
 	return "", nil
 }
@@ -306,6 +307,38 @@ func TestTheClientLogsEachMessageOnce(t *testing.T) {
 	NewClient(&config.Config{OracleUser: "TESTUSER"}, &slowExecutor{}).logf("no log function")
 	if !strings.Contains(console.String(), "[TESTUSER] no log function") {
 		t.Errorf("without a log function nothing reached the console: %q", console.String())
+	}
+}
+
+// Windows ends its network errors with a full stop, and the retry line adds
+// its own after the reason.
+func TestARetryLineEndsTheReasonOnce(t *testing.T) {
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	closed := ln.Addr().String()
+	_ = ln.Close()
+
+	lines := make(chan string, 4)
+	c := fastClient("ws://"+closed+"/tunnel", &slowExecutor{}).
+		WithLogger(func(msg string) {
+			select {
+			case lines <- msg:
+			default:
+			}
+		})
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func() { _ = c.Run(ctx) }()
+
+	select {
+	case line := <-lines:
+		if !strings.HasPrefix(line, "Could not open the tunnel") || strings.Contains(line, "..") {
+			t.Errorf("retry line = %q", line)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("no retry line")
 	}
 }
 

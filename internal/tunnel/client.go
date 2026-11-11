@@ -25,9 +25,9 @@ import (
 // *proxy.Executor in production; an interface so tests can substitute a
 // slow/failing executor without a real Oracle connection.
 type QueryExecutor interface {
-	Execute(sqlText string, params map[string]any) ([][]any, error)
-	ExecuteOne(sqlText string, params map[string]any) ([]any, error)
-	ExecuteClob(sqlText string, params map[string]any) (string, error)
+	Execute(sqlText string, params map[string]any, limit time.Duration) ([][]any, error)
+	ExecuteOne(sqlText string, params map[string]any, limit time.Duration) ([]any, error)
+	ExecuteClob(sqlText string, params map[string]any, limit time.Duration) (string, error)
 }
 
 // Request is a SQL query message received from the cloud backend.
@@ -36,6 +36,10 @@ type Request struct {
 	SQL    string         `json:"sql"`
 	Params map[string]any `json:"params,omitempty"`
 	Mode   string         `json:"mode"` // "all", "one", "clob"
+	// TimeoutMS is how long the query may run, in milliseconds. The platform
+	// sets it a little below its own wait for the answer. 0 when it is not
+	// sent, and the executor's default applies.
+	TimeoutMS int64 `json:"timeout_ms,omitempty"`
 }
 
 // Response is the result sent back to the cloud backend.
@@ -183,10 +187,12 @@ func (c *Client) Run(ctx context.Context) error {
 			c.onDisconnect(err, attempt)
 		}
 		seconds := int(delay.Round(time.Second) / time.Second)
+		// Windows ends its network errors with a full stop of their own.
+		reason := strings.TrimSuffix(err.Error(), ".")
 		if openedAt.IsZero() {
-			c.logf("Could not open the tunnel (attempt %d): %v. Retrying in %ds", attempt, err, seconds)
+			c.logf("Could not open the tunnel (attempt %d): %s. Retrying in %ds", attempt, reason, seconds)
 		} else {
-			c.logf("Tunnel disconnected (attempt %d): %v. Reconnecting in %ds", attempt, err, seconds)
+			c.logf("Tunnel disconnected (attempt %d): %s. Reconnecting in %ds", attempt, reason, seconds)
 		}
 
 		timer := time.NewTimer(delay)
@@ -426,13 +432,14 @@ func snippet(sql string) string {
 func (c *Client) handleRequest(req Request) Response {
 	var result any
 	var err error
+	limit := time.Duration(req.TimeoutMS) * time.Millisecond
 	switch req.Mode {
 	case "one":
-		result, err = c.executor.ExecuteOne(req.SQL, req.Params)
+		result, err = c.executor.ExecuteOne(req.SQL, req.Params, limit)
 	case "clob":
-		result, err = c.executor.ExecuteClob(req.SQL, req.Params)
+		result, err = c.executor.ExecuteClob(req.SQL, req.Params, limit)
 	default: // "all"
-		result, err = c.executor.Execute(req.SQL, req.Params)
+		result, err = c.executor.Execute(req.SQL, req.Params, limit)
 	}
 	if err != nil {
 		return Response{ID: req.ID, Error: err.Error()}

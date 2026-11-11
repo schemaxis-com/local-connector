@@ -136,7 +136,7 @@ package (`node_modules/lucide-static/icons/<name>.svg`) and add it to the
 | `internal/lockfile/` | The single-instance lock (an OS file lock on `agent.lock`), shared by the entry point and the data-directory migration |
 | `internal/config/` | Per-connection settings and the `.env` loader |
 | `internal/branding/` | Product name and the session-identification defaults |
-| `scripts/` | Release tooling: `release-notes.sh` turns a CHANGELOG.md section into a release's notes |
+| `scripts/` | Release tooling: `release-notes.sh` turns CHANGELOG.md's About section and a release's own section into that release's notes |
 
 ## Reporting a security issue
 

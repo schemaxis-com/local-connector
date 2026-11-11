@@ -83,6 +83,14 @@ func hostOnly(hostport string) string {
 	return strings.Trim(hostport, "[]")
 }
 
+// profileRequest is a profile as the web UI sends it to be saved or tested.
+// CopyOf names the saved profile a new one was duplicated from, whose password
+// it keeps while the form leaves it masked.
+type profileRequest struct {
+	ConnectionProfile
+	CopyOf string `json:"copy_of"`
+}
+
 // StartServer starts the embedded web server on host:port. A host other than
 // loopback exposes an unauthenticated API that manages credentials to the
 // network, so it is logged as a warning.
@@ -114,11 +122,12 @@ func StartServer(ctx context.Context, host string, port int, mgr *ConnectionMana
 
 		// POST /api/connections: create or update a profile.
 		if r.Method == http.MethodPost {
-			var p ConnectionProfile
-			if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+			var req profileRequest
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 				writeJSONError(w, http.StatusBadRequest, "Invalid request body")
 				return
 			}
+			p := req.ConnectionProfile
 
 			// Stored as the tunnel will dial it. A URL copied by hand often
 			// brings a space along, which ValidateURL ignores and the dialer
@@ -141,8 +150,8 @@ func StartServer(ctx context.Context, host string, port int, mgr *ConnectionMana
 			}
 
 			// SaveConnection encrypts the password and the token.
-			if err := mgr.SaveConnection(&p); err != nil {
-				writeJSONError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to save profile: %v", err))
+			if err := mgr.SaveConnection(&p, req.CopyOf); err != nil {
+				writeJSONError(w, http.StatusInternalServerError, fmt.Sprintf("Could not save the connection: %v", err))
 				return
 			}
 
@@ -175,14 +184,14 @@ func StartServer(ctx context.Context, host string, port int, mgr *ConnectionMana
 			return
 		}
 
-		var p ConnectionProfile
-		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+		var req profileRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			writeJSONError(w, http.StatusBadRequest, "Invalid request body")
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := mgr.TestConnection(&p); err != nil {
+		if err := mgr.TestConnection(&req.ConnectionProfile, req.CopyOf); err != nil {
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"success": false,
 				"error":   err.Error(),

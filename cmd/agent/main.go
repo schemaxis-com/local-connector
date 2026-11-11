@@ -6,12 +6,12 @@
 // the rest on the local Oracle database, and returns the rows as JSON. It holds
 // no analysis logic of its own: the analysis happens on the platform.
 //
-// Singleton enforcement: an OS-level lock on a file in the data directory
-// (internal/lockfile) prevents running more than one agent instance per user
-// account. Relaunching the binary while an instance is already running reopens
-// that instance's Web UI instead of failing, or only prints its address under
-// --no-browser. Closing the browser tab by mistake should never require
-// killing and restarting the agent.
+// Singleton enforcement: an OS-level lock on a file beside connections.json
+// (internal/lockfile) lets one agent at a time use a set of connection
+// profiles. Relaunching the binary while that agent runs reopens its Web UI
+// instead of failing, or only prints its address under --no-browser. Closing
+// the browser tab by mistake should never require killing and restarting the
+// agent. An agent given its own folder with --config runs beside the others.
 package main
 
 import (
@@ -45,7 +45,7 @@ var browserOpener = openBrowser
 // relaunch racing that narrow window would find no address to open.
 func readLockPort(lockPath string) (port int, ok bool) {
 	for i := 0; i < 10; i++ {
-		if data, err := os.ReadFile(lockPath); err == nil { //nolint:gosec // lockPath is always filepath.Join(DataDir(), lockfile.Name), never external input
+		if data, err := os.ReadFile(lockPath); err == nil { //nolint:gosec // lockPath is the lock file beside the agent's own connections.json, never external input
 			if c, parsed := lockfile.Parse(data); parsed && c.Port > 0 {
 				return c.Port, true
 			}
@@ -87,23 +87,41 @@ func handleExistingInstance(lockPath string, holder *lockfile.Holder, openUI boo
 	return msg
 }
 
-// acquireLock takes the single-instance lock in dataDir. If another instance
-// is already running, it reopens that instance's Web UI (or only reports it
-// under --no-browser) and exits cleanly (code 0) rather than failing. Running
-// the exe a second time should never look like a crash.
-func acquireLock(dataDir string, noBrowser bool) *lockfile.Lock {
-	_ = os.MkdirAll(dataDir, 0700)
+// agentFiles returns the connection profiles and the key file, as --config and
+// --key name them or in dataDir, and the folder whose lock the agent takes.
+// The lock sits beside the profiles it protects, so two agents never write
+// the same connections.json and an agent given a folder of its own is not
+// taken for a second launch of another.
+func agentFiles(dataDir, configFlag, keyFlag string) (profiles, key, lockDir string) {
+	profiles = configFlag
+	if profiles == "" {
+		profiles = filepath.Join(dataDir, "connections.json")
+	}
+	key = keyFlag
+	if key == "" {
+		key = filepath.Join(dataDir, ".agent.key")
+	}
+	return profiles, key, filepath.Dir(profiles)
+}
 
-	lock, holder, err := lockfile.Acquire(dataDir)
+// acquireLock takes the single-instance lock in dir, the folder that holds
+// connections.json. If another instance is already running from it, it
+// reopens that instance's Web UI (or only reports it under --no-browser) and
+// exits cleanly (code 0) rather than failing. Running the exe a second time
+// should never look like a crash.
+func acquireLock(dir string, noBrowser bool) *lockfile.Lock {
+	_ = os.MkdirAll(dir, 0700)
+
+	lock, holder, err := lockfile.Acquire(dir)
 	if err != nil {
-		log.Fatalf("Failed to take the lock file in %s: %v", dataDir, err)
+		log.Fatalf("Failed to take the lock file in %s: %v", dir, err)
 	}
 	if holder != nil {
-		log.Println(handleExistingInstance(filepath.Join(dataDir, lockfile.Name), holder, !noBrowser))
+		log.Println(handleExistingInstance(filepath.Join(dir, lockfile.Name), holder, !noBrowser))
 		os.Exit(0)
 	}
 	if lock.NoOSLock != nil {
-		log.Printf("The file system under %s cannot lock files (%v), so a second agent is recognised by its PID alone.", dataDir, lock.NoOSLock)
+		log.Printf("The file system under %s cannot lock files (%v), so a second agent is recognised by its PID alone.", dir, lock.NoOSLock)
 	}
 	if lock.Stale != 0 {
 		log.Printf("Took over the stale lock left by PID %d", lock.Stale)
@@ -138,16 +156,18 @@ func main() {
 
 	log.Println(branding.AppName + " Agent " + branding.Version + " starting...")
 
-	// Resolve data directory early (needed for lock file). Its notes are
-	// printed before the lock is taken: when an agent of the previous release
-	// still runs from the old directory, acquireLock reopens that agent's UI
-	// and exits, and this is the only place that says why nothing moved.
+	// Resolve the data directory early: the profiles and the lock default to
+	// it. Its notes are printed before the lock is taken: when an agent of the
+	// previous release still runs from the old directory, acquireLock reopens
+	// that agent's UI and exits, and this is the only place that says why
+	// nothing moved.
 	dataDir, dataDirNotes := manager.DataDir()
 	for _, note := range dataDirNotes {
 		log.Println(note)
 	}
 
-	lock := acquireLock(dataDir, *noBrowser)
+	resolvedConfig, resolvedKey, lockDir := agentFiles(dataDir, *configPath, *keyPath)
+	lock := acquireLock(lockDir, *noBrowser)
 	defer func() {
 		lock.Release()
 		log.Printf("Lock released: %s", lock.Path())
@@ -165,16 +185,6 @@ func main() {
 		log.Printf("Received signal %v; shutting down", sig)
 		cancel()
 	}()
-
-	resolvedConfig := *configPath
-	if resolvedConfig == "" {
-		resolvedConfig = filepath.Join(dataDir, "connections.json")
-	}
-
-	resolvedKey := *keyPath
-	if resolvedKey == "" {
-		resolvedKey = filepath.Join(dataDir, ".agent.key")
-	}
 
 	// The manager logs the data directory itself, to the console and the web UI.
 	mgr, err := manager.NewConnectionManager(resolvedConfig, resolvedKey)

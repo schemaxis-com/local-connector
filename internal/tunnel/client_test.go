@@ -23,7 +23,7 @@ type slowExecutor struct {
 	started chan struct{}
 }
 
-func (e *slowExecutor) Execute(sqlText string, params map[string]any) ([][]any, error) {
+func (e *slowExecutor) Execute(sqlText string, params map[string]any, _ time.Duration) ([][]any, error) {
 	if e.started != nil {
 		close(e.started)
 	}
@@ -31,11 +31,11 @@ func (e *slowExecutor) Execute(sqlText string, params map[string]any) ([][]any, 
 	return [][]any{{"ok"}}, nil
 }
 
-func (e *slowExecutor) ExecuteOne(sqlText string, params map[string]any) ([]any, error) {
+func (e *slowExecutor) ExecuteOne(sqlText string, params map[string]any, _ time.Duration) ([]any, error) {
 	return nil, nil
 }
 
-func (e *slowExecutor) ExecuteClob(sqlText string, params map[string]any) (string, error) {
+func (e *slowExecutor) ExecuteClob(sqlText string, params map[string]any, _ time.Duration) (string, error) {
 	return "", nil
 }
 
@@ -258,18 +258,51 @@ func TestUnreadableMessagesAreLoggedWithoutTheirText(t *testing.T) {
 	}
 }
 
-// answerExecutor answers every mode with the values it holds.
+// answerExecutor answers every mode with the values it holds, and records
+// the time limit the query came with.
 type answerExecutor struct {
-	all  [][]any
-	one  []any
-	clob string
-	err  error
+	all   [][]any
+	one   []any
+	clob  string
+	err   error
+	limit time.Duration
 }
 
-func (e *answerExecutor) Execute(string, map[string]any) ([][]any, error)  { return e.all, e.err }
-func (e *answerExecutor) ExecuteOne(string, map[string]any) ([]any, error) { return e.one, e.err }
-func (e *answerExecutor) ExecuteClob(string, map[string]any) (string, error) {
+func (e *answerExecutor) Execute(_ string, _ map[string]any, limit time.Duration) ([][]any, error) {
+	e.limit = limit
+	return e.all, e.err
+}
+func (e *answerExecutor) ExecuteOne(_ string, _ map[string]any, limit time.Duration) ([]any, error) {
+	e.limit = limit
+	return e.one, e.err
+}
+func (e *answerExecutor) ExecuteClob(_ string, _ map[string]any, limit time.Duration) (string, error) {
+	e.limit = limit
 	return e.clob, e.err
+}
+
+// The time the platform allows a query reaches the executor. A request
+// without one leaves the executor to apply its default.
+func TestTheQueryTimeLimitReachesTheExecutor(t *testing.T) {
+	cases := []struct {
+		message string
+		want    time.Duration
+	}{
+		{`{"id":"q1","sql":"SELECT 1 FROM dual","mode":"one","timeout_ms":85000}`, 85 * time.Second},
+		{`{"id":"q1","sql":"SELECT 1 FROM dual","mode":"clob","timeout_ms":1500}`, 1500 * time.Millisecond},
+		{`{"id":"q1","sql":"SELECT 1 FROM dual","mode":"all"}`, 0},
+	}
+	for _, tc := range cases {
+		var req Request
+		if err := json.Unmarshal([]byte(tc.message), &req); err != nil {
+			t.Fatalf("the request cannot be read: %v", err)
+		}
+		executor := &answerExecutor{}
+		NewClient(&config.Config{}, executor).handleRequest(req)
+		if executor.limit != tc.want {
+			t.Errorf("%s: the executor was given %s, want %s", tc.message, executor.limit, tc.want)
+		}
+	}
 }
 
 // What the platform receives for each mode, byte for byte: rows for every

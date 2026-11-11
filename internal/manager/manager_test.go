@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"io/fs"
+	"net"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/schemaxis-com/local-connector/internal/branding"
@@ -38,7 +40,7 @@ func testProfile(enabled bool) *ConnectionProfile {
 // cloud while the UI shows the connection as disabled.
 func TestSavingADisabledProfileStopsItsTunnel(t *testing.T) {
 	mgr := newTestManager(t)
-	if err := mgr.SaveConnection(testProfile(true)); err != nil {
+	if err := mgr.SaveConnection(testProfile(true), ""); err != nil {
 		t.Fatalf("first save: %v", err)
 	}
 
@@ -50,7 +52,7 @@ func TestSavingADisabledProfileStopsItsTunnel(t *testing.T) {
 
 	edited := testProfile(false)
 	edited.OraclePassword, edited.AgentToken = maskedSecret, maskedSecret
-	if err := mgr.SaveConnection(edited); err != nil {
+	if err := mgr.SaveConnection(edited, ""); err != nil {
 		t.Fatalf("second save: %v", err)
 	}
 
@@ -69,8 +71,119 @@ func TestNewProfileWithMaskedSecretIsRefused(t *testing.T) {
 	mgr := newTestManager(t)
 	p := testProfile(true)
 	p.OraclePassword = maskedSecret
-	if err := mgr.SaveConnection(p); err == nil {
+	if err := mgr.SaveConnection(p, ""); err == nil {
 		t.Fatal("saved a new profile whose password is the mask placeholder")
+	}
+}
+
+// A duplicate keeps the original's password while the form leaves it masked.
+// The password is copied inside the agent, so the page never holds it.
+func TestADuplicateKeepsTheOriginalsPassword(t *testing.T) {
+	mgr := newTestManager(t)
+	if err := mgr.SaveConnection(testProfile(false), ""); err != nil {
+		t.Fatalf("save original: %v", err)
+	}
+	dup := testProfile(false)
+	dup.ID, dup.Label, dup.OracleUser = "conn_2", "prod (copy)", "reader_test"
+	dup.OraclePassword, dup.AgentToken = maskedSecret, "token-2"
+	if err := mgr.SaveConnection(dup, "conn_1"); err != nil {
+		t.Fatalf("save duplicate: %v", err)
+	}
+
+	password, err := mgr.crypto.Decrypt(mgr.profiles["conn_2"].OraclePassword)
+	if err != nil || password != "pw" {
+		t.Errorf("duplicate's password = %q, %v, want the original's", password, err)
+	}
+	token, err := mgr.crypto.Decrypt(mgr.profiles["conn_2"].AgentToken)
+	if err != nil || token != "token-2" {
+		t.Errorf("duplicate's token = %q, %v, want the one typed for it", token, err)
+	}
+}
+
+// Each connection on the platform has its own agent token, so a duplicate
+// never takes the original's, and a masked one is refused.
+func TestADuplicateNeedsItsOwnToken(t *testing.T) {
+	mgr := newTestManager(t)
+	if err := mgr.SaveConnection(testProfile(false), ""); err != nil {
+		t.Fatalf("save original: %v", err)
+	}
+	dup := testProfile(false)
+	dup.ID, dup.OraclePassword, dup.AgentToken = "conn_2", maskedSecret, maskedSecret
+	if err := mgr.SaveConnection(dup, "conn_1"); err == nil {
+		t.Fatal("saved a duplicate whose agent token is the mask")
+	}
+	if _, ok := mgr.profiles["conn_2"]; ok {
+		t.Error("the refused duplicate was stored")
+	}
+}
+
+// A duplicate of a profile deleted meanwhile has no password to keep.
+func TestADuplicateOfADeletedProfileNeedsThePassword(t *testing.T) {
+	mgr := newTestManager(t)
+	dup := testProfile(false)
+	dup.ID, dup.OraclePassword = "conn_2", maskedSecret
+	if err := mgr.SaveConnection(dup, "conn_1"); err == nil {
+		t.Fatal("saved a duplicate of a profile that does not exist")
+	}
+}
+
+// Two profiles with one token take the tunnel from each other, which the
+// platform reports as another agent connecting. A token already saved for
+// another profile is refused when it is typed, and an edit that leaves the
+// token masked is not checked again.
+func TestATokenSavedForAnotherProfileIsRefused(t *testing.T) {
+	mgr := newTestManager(t)
+	if err := mgr.SaveConnection(testProfile(false), ""); err != nil {
+		t.Fatalf("save first: %v", err)
+	}
+	second := testProfile(false)
+	second.ID, second.Label = "conn_2", "test"
+	err := mgr.SaveConnection(second, "")
+	if err == nil || !strings.Contains(err.Error(), `"prod"`) {
+		t.Fatalf("SaveConnection = %v, want a refusal naming the profile that uses the token", err)
+	}
+
+	second.AgentToken = "token-2"
+	if err := mgr.SaveConnection(second, ""); err != nil {
+		t.Fatalf("save with its own token: %v", err)
+	}
+	edited := testProfile(false)
+	edited.ID, edited.Label = "conn_2", "test renamed"
+	edited.OraclePassword, edited.AgentToken = maskedSecret, maskedSecret
+	if err := mgr.SaveConnection(edited, ""); err != nil {
+		t.Errorf("an edit that keeps the token was refused: %v", err)
+	}
+}
+
+// A test whose masked password cannot be resolved must not log in with the
+// mask: Oracle would count it as a failed login against the account.
+func TestATestWithAnUnreadablePasswordConnectsNowhere(t *testing.T) {
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = ln.Close() }()
+	var connections atomic.Int32
+	go func() {
+		for {
+			c, err := ln.Accept()
+			if err != nil {
+				return
+			}
+			connections.Add(1)
+			_ = c.Close()
+		}
+	}()
+	host, port, _ := net.SplitHostPort(ln.Addr().String())
+
+	mgr := newTestManager(t)
+	p := testProfile(false)
+	p.ID, p.OracleHost, p.OraclePort, p.OraclePassword = "conn_9", host, port, maskedSecret
+	if err := mgr.TestConnection(p, "conn_1"); err == nil {
+		t.Fatal("TestConnection succeeded with no saved password")
+	}
+	if n := connections.Load(); n != 0 {
+		t.Errorf("%d connections to the database, want none", n)
 	}
 }
 

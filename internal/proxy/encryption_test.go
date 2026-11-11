@@ -6,6 +6,8 @@ import (
 	"errors"
 	"io"
 	"net"
+	"os"
+	"runtime/debug"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -27,8 +29,8 @@ const (
 )
 
 // refusingDatabase listens like that database and counts the connections made
-// to it.
-func refusingDatabase(t *testing.T) (host, port string, connections *atomic.Int32) {
+// to it. A connection the agent closes is reported on hangups.
+func refusingDatabase(t *testing.T) (host, port string, connections *atomic.Int32, hangups <-chan struct{}) {
 	t.Helper()
 	accept, err := hex.DecodeString(recordedAccept)
 	if err != nil {
@@ -44,6 +46,7 @@ func refusingDatabase(t *testing.T) (host, port string, connections *atomic.Int3
 	}
 	t.Cleanup(func() { _ = ln.Close() })
 	connections = new(atomic.Int32)
+	hungUp := make(chan struct{}, 16)
 	go func() {
 		for {
 			c, err := ln.Accept()
@@ -60,7 +63,9 @@ func refusingDatabase(t *testing.T) (host, port string, connections *atomic.Int3
 				_, _ = c.Write(accept)
 				_, _ = c.Write(refusal)
 				_ = c.SetReadDeadline(time.Now().Add(5 * time.Second))
-				_, _ = io.Copy(io.Discard, c)
+				if _, err := io.Copy(io.Discard, c); !errors.Is(err, os.ErrDeadlineExceeded) {
+					hungUp <- struct{}{}
+				}
 			}()
 		}
 	}()
@@ -68,7 +73,7 @@ func refusingDatabase(t *testing.T) (host, port string, connections *atomic.Int3
 	if err != nil {
 		t.Fatal(err)
 	}
-	return host, port, connections
+	return host, port, connections, hungUp
 }
 
 // A database that refuses the agent's network encryption refuses it on every
@@ -77,7 +82,7 @@ func refusingDatabase(t *testing.T) (host, port string, connections *atomic.Int3
 // goes through go-ora itself, so a driver upgrade that reports it differently
 // fails here.
 func TestARefusedEncryptionIsExplainedAndNotRetried(t *testing.T) {
-	host, port, connections := refusingDatabase(t)
+	host, port, connections, _ := refusingDatabase(t)
 	e := newExecutor(&config.Config{
 		OracleHost: host, OraclePort: port, OracleService: "FREEPDB1",
 		OracleUser: "reader", OraclePassword: "pw",
@@ -101,11 +106,36 @@ func TestARefusedEncryptionIsExplainedAndNotRetried(t *testing.T) {
 	if err := e.Ping(ctx); !IsEncryptionRefused(err) {
 		t.Errorf("second Ping = %v, want the same refusal", err)
 	}
-	if _, err := e.Execute("SELECT 1 FROM dual", nil); !IsEncryptionRefused(err) {
+	if _, err := e.Execute("SELECT 1 FROM dual", nil, 0); !IsEncryptionRefused(err) {
 		t.Errorf("Execute = %v, want the same refusal", err)
 	}
 	if n := connections.Load(); n != 1 {
 		t.Errorf("%d connections to the database, want 1", n)
+	}
+}
+
+// go-ora leaves the socket of a connection attempt that fails after the TCP
+// connect to the garbage collector, and the database keeps its end open until
+// then. The executor must close it as soon as the attempt fails. The collector
+// is switched off here, so only the executor can close it.
+func TestAFailedConnectClosesItsSocket(t *testing.T) {
+	defer debug.SetGCPercent(debug.SetGCPercent(-1))
+	host, port, _, hangups := refusingDatabase(t)
+	e := newExecutor(&config.Config{
+		OracleHost: host, OraclePort: port, OracleService: "FREEPDB1",
+		OracleUser: "reader", OraclePassword: "pw",
+	})
+	t.Cleanup(func() { _ = e.Close() })
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := e.Ping(ctx); !IsEncryptionRefused(err) {
+		t.Fatalf("Ping = %v, want the ORA-12269 refusal", err)
+	}
+	select {
+	case <-hangups:
+	case <-time.After(2 * time.Second):
+		t.Fatal("the socket of the refused attempt is still open")
 	}
 }
 

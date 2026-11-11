@@ -33,15 +33,17 @@ type fakeDatabase struct {
 	lastAnswer atomic.Pointer[time.Time]
 }
 
-func (d *fakeDatabase) Execute(string, map[string]any) ([][]any, error) {
+func (d *fakeDatabase) Execute(string, map[string]any, time.Duration) ([][]any, error) {
 	return nil, nil
 }
 
-func (d *fakeDatabase) ExecuteOne(string, map[string]any) ([]any, error) {
+func (d *fakeDatabase) ExecuteOne(string, map[string]any, time.Duration) ([]any, error) {
 	return nil, nil
 }
-func (d *fakeDatabase) ExecuteClob(string, map[string]any) (string, error) { return "", nil }
-func (d *fakeDatabase) Close() error                                       { return nil }
+func (d *fakeDatabase) ExecuteClob(string, map[string]any, time.Duration) (string, error) {
+	return "", nil
+}
+func (d *fakeDatabase) Close() error { return nil }
 
 func (d *fakeDatabase) Ping(context.Context) error {
 	if d.sw.refuse.Load() {
@@ -64,6 +66,8 @@ func (d *fakeDatabase) LastAnswer() time.Time {
 	}
 	return time.Time{}
 }
+
+func (d *fakeDatabase) QueryLimit() time.Duration { return proxy.QueryTimeout }
 
 // useFakeDatabase makes every connection open the fake Oracle behind sw, with
 // the waits shrunk to milliseconds, for the rest of the test.
@@ -119,7 +123,7 @@ func runningManager(t *testing.T, tunnelURL string) *ConnectionManager {
 	mgr := newTestManager(t)
 	p := testProfile(true)
 	p.TunnelURL = tunnelURL
-	if err := mgr.SaveConnection(p); err != nil {
+	if err := mgr.SaveConnection(p, ""); err != nil {
 		t.Fatalf("save: %v", err)
 	}
 	t.Cleanup(func() {
@@ -203,7 +207,7 @@ func TestATunnelURLWithSpacesAroundItConnects(t *testing.T) {
 // what it reports then is not true of the profile any more.
 func TestOnlyTheCurrentRunChangesTheStatus(t *testing.T) {
 	mgr := newTestManager(t)
-	if err := mgr.SaveConnection(testProfile(false)); err != nil {
+	if err := mgr.SaveConnection(testProfile(false), ""); err != nil {
 		t.Fatalf("save: %v", err)
 	}
 	stale, current := &tunnelRun{cancel: func() {}}, &tunnelRun{cancel: func() {}}
@@ -348,6 +352,14 @@ type probe struct {
 	fakeDatabase
 	ping  func(ctx context.Context) error
 	pings atomic.Int32
+	limit time.Duration
+}
+
+func (p *probe) QueryLimit() time.Duration {
+	if p.limit > 0 {
+		return p.limit
+	}
+	return p.fakeDatabase.QueryLimit()
 }
 
 func (p *probe) Ping(ctx context.Context) error {
@@ -389,6 +401,24 @@ func TestCheckDatabase(t *testing.T) {
 		}
 		if err := checkDatabase(context.Background(), p, time.Now()); err != nil {
 			t.Fatalf("checkDatabase = %v, want nil", err)
+		}
+	})
+
+	// Queries may run for as long as the platform allows, so a ping queued
+	// behind them waits longer than that before it gives up.
+	t.Run("the ping outwaits the queries", func(t *testing.T) {
+		var waited time.Duration
+		p := &probe{limit: 90 * time.Second}
+		p.ping = func(ctx context.Context) error {
+			deadline, _ := ctx.Deadline()
+			waited = time.Until(deadline)
+			return nil
+		}
+		if err := checkDatabase(context.Background(), p, time.Now()); err != nil {
+			t.Fatalf("checkDatabase = %v, want nil", err)
+		}
+		if want := 90*time.Second + databaseCheckMargin; waited > want || waited < want-time.Second {
+			t.Fatalf("the ping could wait %s, want %s", waited, want)
 		}
 	})
 

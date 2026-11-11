@@ -140,6 +140,7 @@ type database interface {
 	tunnel.QueryExecutor
 	Ping(ctx context.Context) error
 	LastAnswer() time.Time
+	QueryLimit() time.Duration
 	Close() error
 }
 
@@ -160,10 +161,10 @@ var (
 	databaseCheckInterval = 10 * time.Second
 )
 
-// databaseCheckTimeout bounds one check. It is longer than a query's own
-// timeout, so a check that waits for a session behind slow queries sees one
-// of them finish before it gives up.
-const databaseCheckTimeout = proxy.QueryTimeout + 5*time.Second
+// databaseCheckMargin is how much longer a check waits than a query may run,
+// so a check queued for a session behind slow queries sees one of them finish
+// before it gives up.
+const databaseCheckMargin = 5 * time.Second
 
 // DataDir returns a stable, platform-specific directory for storing agent data:
 // %APPDATA%\<AppName> on Windows, ~/.<appname> elsewhere, and notes on what it
@@ -678,14 +679,15 @@ func checkDatabase(ctx context.Context, db database, since time.Time) error {
 		return nil
 	}
 	started := time.Now()
-	pingCtx, cancel := context.WithTimeout(ctx, databaseCheckTimeout)
+	timeout := db.QueryLimit() + databaseCheckMargin
+	pingCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	err := db.Ping(pingCtx)
 	switch {
 	case err == nil, !db.LastAnswer().Before(started):
 		return nil
 	case errors.Is(err, context.DeadlineExceeded) && ctx.Err() == nil:
-		return fmt.Errorf("no answer within %s", databaseCheckTimeout)
+		return fmt.Errorf("no answer within %s", timeout)
 	default:
 		return err
 	}
@@ -757,20 +759,26 @@ func (m *ConnectionManager) GetProfiles() []*ConnectionProfile {
 	return result
 }
 
-// TestConnection pings the target Oracle database synchronously.
-func (m *ConnectionManager) TestConnection(p *ConnectionProfile) error {
+// TestConnection pings the target Oracle database synchronously. A password
+// left masked is a saved one: the profile's own, or that of the profile it was
+// duplicated from (copyOf).
+func (m *ConnectionManager) TestConnection(p *ConnectionProfile, copyOf string) error {
 	m.AddLog(fmt.Sprintf("Testing connection to: %s...", p.Label))
 	password := p.OraclePassword
-	if p.ID != "" && password == maskedSecret {
+	if password == maskedSecret {
 		m.mu.RLock()
-		existing, ok := m.profiles[p.ID]
-		if ok {
-			decrypted, err := m.crypto.Decrypt(existing.OraclePassword)
-			if err == nil {
-				password = decrypted
-			}
+		source := m.passwordSourceLocked(p.ID, copyOf)
+		err := errors.New("no saved password")
+		if source != nil {
+			password, err = m.crypto.Decrypt(source.OraclePassword)
 		}
 		m.mu.RUnlock()
+		// Logging in with the mask itself would count as a failed login
+		// against the account.
+		if err != nil {
+			m.AddLog(fmt.Sprintf("Test connection not run: the saved password could not be read: %v", err))
+			return errors.New("the saved password could not be read, so type it in to run the test")
+		}
 	}
 	cfg := &config.Config{
 		OracleHost: p.OracleHost, OraclePort: p.OraclePort,
@@ -788,19 +796,51 @@ func (m *ConnectionManager) TestConnection(p *ConnectionProfile) error {
 	return nil
 }
 
-// SaveConnection adds or updates a connection profile.
-func (m *ConnectionManager) SaveConnection(p *ConnectionProfile) error {
+// passwordSourceLocked returns the profile whose saved password a form left
+// masked: the profile itself when it is saved, otherwise the one it was
+// duplicated from. The agent token is never taken from another profile, since
+// each connection has its own. The caller holds m.mu.
+func (m *ConnectionManager) passwordSourceLocked(id, copyOf string) *ConnectionProfile {
+	if p, ok := m.profiles[id]; ok {
+		return p
+	}
+	return m.profiles[copyOf]
+}
+
+// profileWithTokenLocked returns another profile than id that stores token, if
+// any. Two profiles with one token would take the tunnel from each other. The
+// caller holds m.mu.
+func (m *ConnectionManager) profileWithTokenLocked(token, id string) *ConnectionProfile {
+	for _, p := range m.profiles {
+		if p.ID == id {
+			continue
+		}
+		if stored, err := m.crypto.Decrypt(p.AgentToken); err == nil && stored == token {
+			return p
+		}
+	}
+	return nil
+}
+
+// SaveConnection adds or updates a connection profile. A password left masked
+// keeps the saved one, which for a new profile is that of the profile it was
+// duplicated from (copyOf).
+func (m *ConnectionManager) SaveConnection(p *ConnectionProfile, copyOf string) error {
 	m.AddLog(fmt.Sprintf("Saving connection profile: %s", p.Label))
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	existing, isUpdate := m.profiles[p.ID]
-	if !isUpdate && (p.OraclePassword == maskedSecret || p.AgentToken == maskedSecret) {
-		return fmt.Errorf("a new connection needs the password and the agent token")
+	if !isUpdate && p.AgentToken == maskedSecret {
+		return errors.New("a new connection needs its own agent token")
 	}
 
 	if p.OraclePassword == maskedSecret {
-		p.OraclePassword = existing.OraclePassword
+		source := m.passwordSourceLocked(p.ID, copyOf)
+		if source == nil {
+			return errors.New("a new connection needs the password")
+		}
+		p.OraclePassword = source.OraclePassword
 	} else {
 		encPass, err := m.crypto.Encrypt(p.OraclePassword)
 		if err != nil {
@@ -812,6 +852,9 @@ func (m *ConnectionManager) SaveConnection(p *ConnectionProfile) error {
 	if p.AgentToken == maskedSecret {
 		p.AgentToken = existing.AgentToken
 	} else {
+		if other := m.profileWithTokenLocked(p.AgentToken, p.ID); other != nil {
+			return fmt.Errorf("%q already uses this agent token. Each connection needs the token issued for it", other.Label)
+		}
 		encToken, err := m.crypto.Encrypt(p.AgentToken)
 		if err != nil {
 			return fmt.Errorf("encrypt token: %w", err)

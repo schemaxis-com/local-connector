@@ -207,3 +207,35 @@ func TestAcquireLockTakesOverALockWhosePIDWasReused(t *testing.T) {
 		t.Fatalf("Stale = %d, want %d", lock.Stale, os.Getppid())
 	}
 }
+
+// The lock follows the profiles: by default the data directory holds both,
+// and an agent given its own folder with --config locks that folder.
+func TestTheLockSitsBesideTheProfiles(t *testing.T) {
+	dataDir := t.TempDir()
+	profiles, key, lockDir := agentFiles(dataDir, "", "")
+	if profiles != filepath.Join(dataDir, "connections.json") || key != filepath.Join(dataDir, ".agent.key") || lockDir != dataDir {
+		t.Fatalf("defaults: got %s, %s, lock in %s; want both files and the lock in %s", profiles, key, lockDir, dataDir)
+	}
+
+	own := t.TempDir()
+	profiles, key, lockDir = agentFiles(dataDir, filepath.Join(own, "connections.json"), filepath.Join(own, ".agent.key"))
+	if profiles != filepath.Join(own, "connections.json") || key != filepath.Join(own, ".agent.key") || lockDir != own {
+		t.Fatalf("own folder: got %s, %s, lock in %s; want both files and the lock in %s", profiles, key, lockDir, own)
+	}
+}
+
+// A second agent of the same user, given a folder of its own, runs beside the
+// first instead of reopening the first one's Web UI.
+func TestAnAgentWithAFolderOfItsOwnRunsBesideTheDefaultOne(t *testing.T) {
+	dataDir := t.TempDir()
+	_, _, first := agentFiles(dataDir, "", "")
+	_, _, second := agentFiles(dataDir, filepath.Join(t.TempDir(), "connections.json"), "")
+
+	a := acquireLock(first, true)
+	defer a.Release()
+	b, holder, err := lockfile.Acquire(second)
+	if err != nil || holder != nil {
+		t.Fatalf("the second agent's lock: holder %v, error %v; want it taken", holder, err)
+	}
+	b.Release()
+}
